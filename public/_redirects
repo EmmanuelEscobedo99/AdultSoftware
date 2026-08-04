@@ -1,0 +1,5 @@
+/*
+  Netlify redirects para SPA (React Router).
+  Si usas Vercel, usa vercel.json en su lugar.
+*/
+/*    /index.html   200

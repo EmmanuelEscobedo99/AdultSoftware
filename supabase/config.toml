@@ -1,0 +1,22 @@
+# Supabase CLI config (referencia para `supabase start` / `supabase db push`)
+# Las migraciones están en ./supabase/migrations y las Edge Functions en ./supabase/functions.
+
+project_id = "creatorhub"
+
+[functions.ai-agent-reply]
+verify_jwt = true
+
+[functions.create-checkout]
+verify_jwt = true
+
+[functions.payment-webhook]
+verify_jwt = false
+
+[auth]
+# Forzamos que el refresh token se gestione siempre por Supabase Auth
+enforce_https = true
+
+[db]
+# Realtime para chat
+[db.realtime]
+enabled = true

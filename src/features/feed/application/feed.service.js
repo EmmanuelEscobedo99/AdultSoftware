@@ -38,4 +38,16 @@ export const feedService = {
   getMyBookmarks() {
     return supabaseFeedRepository.getMyBookmarks()
   },
+
+  listComments(videoId) {
+    return supabaseFeedRepository.listComments(videoId)
+  },
+
+  addComment(videoId, body) {
+    return supabaseFeedRepository.addComment(videoId, body)
+  },
+
+  deleteComment(commentId) {
+    return supabaseFeedRepository.deleteComment(commentId)
+  },
 }

@@ -1,8 +1,12 @@
 import { supabaseSubscriberRepository } from '../infrastructure/supabaseSubscriberRepository'
 
 export const subscriberService = {
-  listCreators() {
-    return supabaseSubscriberRepository.listCreators()
+  listCreators({ search } = {}) {
+    return supabaseSubscriberRepository.listCreators({ search })
+  },
+
+  getActiveSubscriberCounts() {
+    return supabaseSubscriberRepository.getActiveSubscriberCounts()
   },
 
   getCreatorByUsername(username) {
@@ -19,6 +23,10 @@ export const subscriberService = {
 
   listPpvPosts(creatorId) {
     return supabaseSubscriberRepository.listPpvPosts(creatorId)
+  },
+
+  getPostMediaUrl(media) {
+    return supabaseSubscriberRepository.getPostMediaUrl(media)
   },
 
   getMyPpvUnlocks(creatorId) {

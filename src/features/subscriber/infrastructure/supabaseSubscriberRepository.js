@@ -1,15 +1,34 @@
 import { supabase } from '@/services/supabase/client'
 
 export const supabaseSubscriberRepository = {
-  async listCreators() {
-    const { data, error } = await supabase
+  async listCreators({ search } = {}) {
+    let query = supabase
       .from('profiles')
       .select('*')
       .eq('role', 'creator')
       .eq('is_banned', false)
+    if (search?.trim()) {
+      const term = `%${search.trim()}%`
+      query = query.or(
+        `display_name.ilike.${term},username.ilike.${term},bio.ilike.${term}`,
+      )
+    }
+    const { data, error } = await query
       .order('created_at', { ascending: false })
+      .limit(50)
     if (error) throw error
     return data ?? []
+  },
+
+  async getActiveSubscriberCounts() {
+    const { data, error } = await supabase
+      .from('subscriptions')
+      .select('creator_id, count')
+      .eq('status', 'active')
+    if (error) throw error
+    const counts = {}
+    for (const row of data ?? []) counts[row.creator_id] = row.count
+    return counts
   },
 
   async getCreatorByUsername(username) {
@@ -37,7 +56,9 @@ export const supabaseSubscriberRepository = {
   async listFreePosts(creatorId) {
     const { data, error } = await supabase
       .from('creator_posts')
-      .select('id, title, description, created_at')
+      .select(
+        'id, title, description, created_at, media:post_media(storage_path, media_type, sort_order)',
+      )
       .eq('creator_id', creatorId)
       .eq('visibility', 'free')
       .not('published_at', 'is', null)
@@ -50,7 +71,9 @@ export const supabaseSubscriberRepository = {
   async listPpvPosts(creatorId) {
     const { data, error } = await supabase
       .from('creator_posts')
-      .select('id, title, description, price, created_at')
+      .select(
+        'id, title, description, price, created_at, media:post_media(storage_path, media_type, sort_order)',
+      )
       .eq('creator_id', creatorId)
       .eq('visibility', 'ppv')
       .not('published_at', 'is', null)
@@ -58,6 +81,16 @@ export const supabaseSubscriberRepository = {
       .limit(20)
     if (error) throw error
     return data ?? []
+  },
+
+  async getPostMediaUrl(media) {
+    if (!media?.storage_path) return null
+    const bucket = media.media_type === 'video' ? 'content-videos' : 'content-images'
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .createSignedUrl(media.storage_path, 60 * 60)
+    if (error) throw error
+    return data?.signedUrl ?? null
   },
 
   async getMyPpvUnlocks(creatorId) {

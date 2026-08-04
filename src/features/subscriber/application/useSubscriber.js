@@ -1,11 +1,28 @@
 import { useQuery } from '@tanstack/react-query'
 import { subscriberService } from '../application/subscriber.service'
 
-export function useCreators() {
+export function useCreators(search) {
   return useQuery({
-    queryKey: ['creators'],
-    queryFn: () => subscriberService.listCreators(),
+    queryKey: ['creators', search ?? 'all'],
+    queryFn: () => subscriberService.listCreators({ search }),
     staleTime: 60_000,
+  })
+}
+
+export function useActiveSubscriberCounts() {
+  return useQuery({
+    queryKey: ['creator-subscriber-counts'],
+    queryFn: () => subscriberService.getActiveSubscriberCounts(),
+    staleTime: 60_000,
+  })
+}
+
+export function usePostMediaUrl(media) {
+  return useQuery({
+    queryKey: ['post-media-url', media?.storage_path],
+    queryFn: () => subscriberService.getPostMediaUrl(media),
+    enabled: Boolean(media?.storage_path),
+    staleTime: 60 * 60 * 1000,
   })
 }
 

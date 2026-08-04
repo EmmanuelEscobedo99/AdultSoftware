@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
-import { Users } from 'lucide-react'
+import { Lock, Users } from 'lucide-react'
 import { useProfileImage } from '@/features/dashboard/application/useProfile'
 import { paymentsService } from '@/features/payments/application/payments.service'
 import {
@@ -15,6 +15,7 @@ import {
   useCreatorPpvPosts,
   useMyPpvUnlocks,
   useMyActiveSubscription,
+  usePostMediaUrl,
 } from '../../application/useSubscriber'
 
 const PROVIDERS = [
@@ -23,6 +24,29 @@ const PROVIDERS = [
   { value: 'ccbill', label: 'CCBill' },
   { value: 'segpay', label: 'SegPay' },
 ]
+
+function PostMedia({ media, aspect = 'aspect-[4/5]' }) {
+  const { data: url, isLoading } = usePostMediaUrl(media)
+
+  if (isLoading || !url) {
+    return <Skeleton className={`${aspect} w-full`} />
+  }
+
+  if (media.media_type === 'video') {
+    return (
+      <video
+        src={url}
+        muted
+        playsInline
+        preload="metadata"
+        controls
+        className={`${aspect} w-full object-cover`}
+      />
+    )
+  }
+
+  return <img src={url} alt="" className={`${aspect} w-full object-cover`} />
+}
 
 export default function CreatorProfilePage() {
   const { username } = useParams()

@@ -5,11 +5,13 @@ import { Badge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { Input } from '@/components/ui/Input'
 import { Button } from '@/components/ui/Button'
+import { useAuth } from '@/features/auth/application/AuthProvider'
 import { useProfileImage } from '@/features/dashboard/application/useProfile'
 import {
   useCreators,
   useActiveSubscriberCounts,
-  useMySubscriptions,
+  useMyFollowing,
+  useToggleFollow,
 } from '../../application/useSubscriber'
 import { Compass, Search, Send, Users } from 'lucide-react'
 
@@ -35,7 +37,7 @@ function CreatorAvatar({ creator }) {
   )
 }
 
-function CreatorCard({ creator, subscribed, subscriberCount }) {
+function CreatorCard({ creator, isFollowing, subscriberCount, toggleFollow, busy }) {
   const profileTo = `/c/${creator.username}`
   return (
     <Card className="group flex items-center gap-4 p-4 transition-colors hover:border-primary">
@@ -46,11 +48,7 @@ function CreatorCard({ creator, subscribed, subscriberCount }) {
             <p className="truncate font-semibold text-neutral-100 transition-colors group-hover:text-primary">
               {creator.display_name ?? creator.username}
             </p>
-            {subscribed ? (
-              <Badge tone="success">Suscrito</Badge>
-            ) : (
-              <Badge tone="info">Creador</Badge>
-            )}
+            <Badge tone="info">Creador</Badge>
           </div>
           <p className="text-xs text-neutral-500">
             @{creator.username}
@@ -69,29 +67,34 @@ function CreatorCard({ creator, subscribed, subscriberCount }) {
             <Send className="h-4 w-4" /> Mensaje
           </Button>
         </Link>
-        <Link to={profileTo}>
-          <Button size="sm">{subscribed ? 'Ver perfil' : 'Seguir'}</Button>
-        </Link>
+        <Button
+          size="sm"
+          variant={isFollowing ? 'outline' : undefined}
+          onClick={() => toggleFollow({ creatorId: creator.id, isFollowing })}
+          loading={busy}
+        >
+          {isFollowing ? 'Siguiendo' : 'Seguir'}
+        </Button>
       </div>
     </Card>
   )
 }
 
 export default function BrowsePage() {
+  const { user } = useAuth()
+  const userId = user?.id
   const [search, setSearch] = useState('')
   const debouncedSearch = useDebouncedValue(search)
   const { data: creators, isLoading } = useCreators(debouncedSearch)
   const { data: counts } = useActiveSubscriberCounts()
-  const { data: subscriptions } = useMySubscriptions()
+  const { data: following } = useMyFollowing(userId)
+  const toggleFollowMutation = useToggleFollow(userId)
 
-  const subscribedIds = new Set((subscriptions ?? []).map((sub) => sub.creator_id))
+  const toggleFollow = (payload) => toggleFollowMutation.mutate(payload)
 
   const recommended = (creators ?? [])
-    .filter((creator) => !subscribedIds.has(creator.id))
-    .sort(
-      (a, b) =>
-        (counts?.[b.id] ?? 0) - (counts?.[a.id] ?? 0),
-    )
+    .filter((creator) => creator.id !== userId && !following?.has(creator.id))
+    .sort((a, b) => (counts?.[b.id] ?? 0) - (counts?.[a.id] ?? 0))
     .slice(0, 12)
 
   const hasSearch = Boolean(debouncedSearch.trim())
@@ -145,8 +148,10 @@ export default function BrowsePage() {
             <CreatorCard
               key={creator.id}
               creator={creator}
-              subscribed={subscribedIds.has(creator.id)}
+              isFollowing={following?.has(creator.id)}
               subscriberCount={counts?.[creator.id] ?? 0}
+              toggleFollow={toggleFollow}
+              busy={toggleFollowMutation.isPending}
             />
           ))}
         </section>
@@ -161,8 +166,10 @@ export default function BrowsePage() {
                 <CreatorCard
                   key={creator.id}
                   creator={creator}
-                  subscribed={subscribedIds.has(creator.id)}
+                  isFollowing={following?.has(creator.id)}
                   subscriberCount={counts?.[creator.id] ?? 0}
+                  toggleFollow={toggleFollow}
+                  busy={toggleFollowMutation.isPending}
                 />
               ))
             ) : (
@@ -183,8 +190,10 @@ export default function BrowsePage() {
                   <CreatorCard
                     key={creator.id}
                     creator={creator}
-                    subscribed={subscribedIds.has(creator.id)}
+                    isFollowing={following?.has(creator.id)}
                     subscriberCount={counts?.[creator.id] ?? 0}
+                    toggleFollow={toggleFollow}
+                    busy={toggleFollowMutation.isPending}
                   />
                 ))}
             </section>

@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { subscriberService } from '../application/subscriber.service'
 
 export function useCreators(search) {
@@ -81,5 +81,28 @@ export function useMySubscriptions() {
     queryKey: ['my-subscriptions'],
     queryFn: () => subscriberService.getMySubscriptions(),
     staleTime: 30_000,
+  })
+}
+
+export function useMyFollowing(userId) {
+  return useQuery({
+    queryKey: ['my-following', userId],
+    queryFn: () => subscriberService.getMyFollowing(userId),
+    enabled: Boolean(userId),
+    staleTime: 30_000,
+  })
+}
+
+export function useToggleFollow(userId) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ creatorId, isFollowing }) =>
+      isFollowing
+        ? subscriberService.unfollow(userId, creatorId)
+        : subscriberService.follow(userId, creatorId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['my-following', userId] })
+      queryClient.invalidateQueries({ queryKey: ['creator-subscriber-counts'] })
+    },
   })
 }

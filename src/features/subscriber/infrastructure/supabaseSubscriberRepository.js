@@ -93,6 +93,31 @@ export const supabaseSubscriberRepository = {
     return data?.signedUrl ?? null
   },
 
+  async follow(userId, creatorId) {
+    const { error } = await supabase
+      .from('follows')
+      .insert({ follower_id: userId, following_id: creatorId })
+    if (error) throw error
+  },
+
+  async unfollow(userId, creatorId) {
+    const { error } = await supabase
+      .from('follows')
+      .delete()
+      .eq('follower_id', userId)
+      .eq('following_id', creatorId)
+    if (error) throw error
+  },
+
+  async getMyFollowing(userId) {
+    const { data, error } = await supabase
+      .from('follows')
+      .select('following_id')
+      .eq('follower_id', userId)
+    if (error) throw error
+    return new Set((data ?? []).map((row) => row.following_id))
+  },
+
   async getMyPpvUnlocks(creatorId) {
     const { data, error } = await supabase
       .from('payments')

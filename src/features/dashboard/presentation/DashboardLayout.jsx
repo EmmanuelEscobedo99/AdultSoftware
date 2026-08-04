@@ -1,9 +1,9 @@
-import { NavLink, Outlet } from 'react-router-dom'
+import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { cn } from '@/lib/cn'
 import { ROLES, ROLE_LABELS } from '@/lib/constants'
 import { useAuth } from '@/features/auth/application/AuthProvider'
+import { NotificationsBell } from '@/features/notifications/presentation/NotificationsBell'
 import { LogOut, User } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
 
 function getNavByRole(role) {
   const common = [
@@ -50,6 +50,7 @@ export default function DashboardLayout() {
 
   return (
     <div className="flex min-h-screen">
+      <NotificationsBell />
       <aside className="fixed inset-y-0 left-0 z-20 flex w-64 flex-col border-r border-line bg-surface-2">
         <div className="flex h-16 items-center gap-2 border-b border-line px-5">
           <span className="h-2.5 w-2.5 rounded-full bg-primary" />

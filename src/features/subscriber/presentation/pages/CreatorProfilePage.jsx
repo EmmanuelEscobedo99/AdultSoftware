@@ -6,6 +6,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/Ca
 import { Badge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { Lock, Users } from 'lucide-react'
+import { useAuth } from '@/features/auth/application/AuthProvider'
 import { useProfileImage } from '@/features/dashboard/application/useProfile'
 import { paymentsService } from '@/features/payments/application/payments.service'
 import {
@@ -15,6 +16,8 @@ import {
   useCreatorPpvPosts,
   useMyPpvUnlocks,
   useMyActiveSubscription,
+  useMyFollowing,
+  useToggleFollow,
   usePostMediaUrl,
 } from '../../application/useSubscriber'
 
@@ -50,6 +53,7 @@ function PostMedia({ media, aspect = 'aspect-[4/5]' }) {
 
 export default function CreatorProfilePage() {
   const { username } = useParams()
+  const { user } = useAuth()
   const queryClient = useQueryClient()
   const [provider, setProvider] = useState('test')
   const [busy, setBusy] = useState(false)
@@ -61,6 +65,11 @@ export default function CreatorProfilePage() {
   const { data: subscription } = useMyActiveSubscription(creator?.id)
   const { data: avatarUrl } = useProfileImage(creator?.avatar_url)
   const { data: coverUrl } = useProfileImage(creator?.cover_url)
+  const { data: following } = useMyFollowing(user?.id)
+  const toggleFollowMutation = useToggleFollow(user?.id)
+
+  const isFollowing = Boolean(creator && following?.has(creator.id))
+  const isOwnProfile = Boolean(creator && user?.id === creator.id)
 
   const applyCheckoutResult = (result) => {
     if (result.redirect_url) {
@@ -150,6 +159,21 @@ export default function CreatorProfilePage() {
                   Suscrito · expira{' '}
                   {new Date(subscription.expires_at).toLocaleDateString()}
                 </Badge>
+              ) : null}
+              {!isOwnProfile ? (
+                <Button
+                  variant={isFollowing ? 'outline' : undefined}
+                  size="sm"
+                  onClick={() =>
+                    toggleFollowMutation.mutate({
+                      creatorId: creator.id,
+                      isFollowing,
+                    })
+                  }
+                  loading={toggleFollowMutation.isPending}
+                >
+                  {isFollowing ? 'Siguiendo' : 'Seguir'}
+                </Button>
               ) : null}
               <Link to={`/chat/${creator.username}`}>
                 <Button variant="outline" size="sm">

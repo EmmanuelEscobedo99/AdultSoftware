@@ -29,6 +29,18 @@ export const subscriberService = {
     return supabaseSubscriberRepository.getPostMediaUrl(media)
   },
 
+  follow(userId, creatorId) {
+    return supabaseSubscriberRepository.follow(userId, creatorId)
+  },
+
+  unfollow(userId, creatorId) {
+    return supabaseSubscriberRepository.unfollow(userId, creatorId)
+  },
+
+  getMyFollowing(userId) {
+    return supabaseSubscriberRepository.getMyFollowing(userId)
+  },
+
   getMyPpvUnlocks(creatorId) {
     return supabaseSubscriberRepository.getMyPpvUnlocks(creatorId)
   },

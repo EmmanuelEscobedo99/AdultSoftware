@@ -226,35 +226,50 @@ export default function CreatorProfilePage() {
           <h2 className="mb-3 text-lg font-semibold text-neutral-100">
             Contenido premium
           </h2>
-          <div className="space-y-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             {ppvPosts.map((post) => {
               const unlocked = unlockedPosts?.has(post.id)
               const included = Boolean(subscription)
+              const canSee = unlocked || included
               return (
-                <Card key={post.id} className="flex items-center gap-4">
-                  <div className="min-w-0 flex-1">
-                    <p className="font-medium text-neutral-100">{post.title}</p>
-                    {post.description ? (
-                      <p className="mt-1 line-clamp-2 text-sm text-neutral-400">
-                        {post.description}
-                      </p>
-                    ) : null}
+                <Card key={post.id} className="overflow-hidden">
+                  <div className="relative aspect-[16/10] bg-gradient-to-br from-purple-800/40 to-pink-800/40">
+                    {canSee && post.media?.length ? (
+                      <PostMedia media={post.media[0]} aspect="h-full w-full" />
+                    ) : (
+                      <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-white/80">
+                        <Lock className="h-8 w-8" />
+                        <span className="text-xs">Contenido premium</span>
+                      </div>
+                    )}
                   </div>
-                  <span className="shrink-0 font-semibold text-neutral-100">
-                    ${post.price}
-                  </span>
-                  <Button
-                    size="sm"
-                    className="shrink-0"
-                    onClick={() => handleUnlock(post.id)}
-                    disabled={unlocked || included || busy}
-                  >
-                    {unlocked
-                      ? 'Desbloqueado'
-                      : included
-                        ? 'Acceso incluido'
-                        : 'Desbloquear'}
-                  </Button>
+                  <div className="flex items-center gap-3 p-4">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium text-neutral-100">
+                        {post.title}
+                      </p>
+                      {post.description ? (
+                        <p className="mt-1 line-clamp-2 text-sm text-neutral-400">
+                          {post.description}
+                        </p>
+                      ) : null}
+                    </div>
+                    <span className="shrink-0 font-semibold text-neutral-100">
+                      ${post.price}
+                    </span>
+                    <Button
+                      size="sm"
+                      className="shrink-0"
+                      onClick={() => handleUnlock(post.id)}
+                      disabled={canSee || busy}
+                    >
+                      {unlocked
+                        ? 'Desbloqueado'
+                        : included
+                          ? 'Acceso incluido'
+                          : 'Desbloquear'}
+                    </Button>
+                  </div>
                 </Card>
               )
             })}
@@ -267,16 +282,33 @@ export default function CreatorProfilePage() {
           <h2 className="mb-3 text-lg font-semibold text-neutral-100">
             Publicaciones
           </h2>
-          <div className="space-y-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             {freePosts.map((post) => (
-              <Card key={post.id}>
-                <p className="font-medium text-neutral-100">{post.title}</p>
-                {post.description ? (
-                  <p className="mt-1 text-sm text-neutral-400">{post.description}</p>
+              <Card key={post.id} className="overflow-hidden">
+                {post.media?.length ? (
+                  <div
+                    className={
+                      post.media.length > 1
+                        ? 'grid grid-cols-2 gap-0.5'
+                        : 'block'
+                    }
+                  >
+                    {post.media.slice(0, 4).map((media, index) => (
+                      <PostMedia key={index} media={media} />
+                    ))}
+                  </div>
                 ) : null}
-                <p className="mt-2 text-xs text-neutral-500">
-                  {new Date(post.created_at).toLocaleDateString()}
-                </p>
+                <div className="p-4">
+                  <p className="font-medium text-neutral-100">{post.title}</p>
+                  {post.description ? (
+                    <p className="mt-1 text-sm text-neutral-400">
+                      {post.description}
+                    </p>
+                  ) : null}
+                  <p className="mt-2 text-xs text-neutral-500">
+                    {new Date(post.created_at).toLocaleDateString()}
+                  </p>
+                </div>
               </Card>
             ))}
           </div>

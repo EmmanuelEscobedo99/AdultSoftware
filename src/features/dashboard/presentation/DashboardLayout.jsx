@@ -9,7 +9,8 @@ function getNavByRole(role) {
   const common = [
     { to: '/dashboard', label: 'Panel', end: true },
     { to: '/dashboard/profile', label: 'Perfil', end: false },
-    { to: '/feed', label: 'Explorar', end: false },
+    { to: '/browse', label: 'Explorar', end: false },
+    { to: '/feed', label: 'Feed de videos', end: false },
   ]
   const creator = [
     { to: '/dashboard/creator', label: 'Estudio del creador', end: false },

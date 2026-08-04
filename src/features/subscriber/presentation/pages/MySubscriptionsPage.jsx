@@ -1,8 +1,24 @@
-import { Card, CardDescription } from '@/components/ui/Card'
+import { Link } from 'react-router-dom'
+import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
-import { User } from 'lucide-react'
+import { Button } from '@/components/ui/Button'
+import { useProfileImage } from '@/features/dashboard/application/useProfile'
 import { useMySubscriptions } from '../../application/useSubscriber'
+import { Send, Users } from 'lucide-react'
+
+function SubCreatorAvatar({ creator }) {
+  const { data: avatarUrl } = useProfileImage(creator?.avatar_url)
+  return (
+    <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-3">
+      {avatarUrl ? (
+        <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+      ) : (
+        <Users className="h-5 w-5 text-neutral-500" />
+      )}
+    </div>
+  )
+}
 
 export default function MySubscriptionsPage() {
   const { data: subscriptions, isLoading } = useMySubscriptions()
@@ -27,6 +43,9 @@ export default function MySubscriptionsPage() {
           <p className="mt-1 text-sm text-neutral-500">
             Explora creadores y suscríbete para ver su contenido exclusivo.
           </p>
+          <Link to="/browse" className="mt-4 inline-block">
+            <Button>Explorar creadores</Button>
+          </Link>
         </Card>
       </div>
     )
@@ -38,25 +57,36 @@ export default function MySubscriptionsPage() {
 
       {subscriptions.map((sub) => (
         <Card key={sub.id} className="flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-surface-3">
-            <User className="h-5 w-5 text-neutral-500" />
-          </div>
+          <SubCreatorAvatar creator={sub.creator} />
           <div className="min-w-0 flex-1">
             <p className="font-semibold text-neutral-100">
               {sub.creator?.display_name ?? sub.creator?.username}
             </p>
-            <CardDescription>
-              {sub.plan?.name ?? 'Plan'} · $
-              {sub.plan?.price ?? '—'}/
+            <p className="text-sm text-neutral-500">
+              {sub.plan?.name ?? 'Plan'} · ${sub.plan?.price ?? '—'}/
               {sub.plan?.billing_interval ?? '—'} · vence{' '}
               {sub.expires_at
                 ? new Date(sub.expires_at).toLocaleDateString()
                 : '—'}
-            </CardDescription>
+            </p>
           </div>
           <Badge tone={sub.status === 'active' ? 'success' : 'default'}>
             {sub.status}
           </Badge>
+          {sub.creator?.username ? (
+            <div className="flex shrink-0 gap-2">
+              <Link to={`/chat/${sub.creator.username}`}>
+                <Button variant="ghost" size="sm">
+                  <Send className="h-4 w-4" /> Mensaje
+                </Button>
+              </Link>
+              <Link to={`/c/${sub.creator.username}`}>
+                <Button variant="outline" size="sm">
+                  Ver perfil
+                </Button>
+              </Link>
+            </div>
+          ) : null}
         </Card>
       ))}
     </div>

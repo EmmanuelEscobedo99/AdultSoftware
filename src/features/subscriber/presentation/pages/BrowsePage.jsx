@@ -36,35 +36,40 @@ function CreatorAvatar({ creator }) {
 }
 
 function CreatorCard({ creator, subscribed, subscriberCount }) {
+  const profileTo = `/c/${creator.username}`
   return (
-    <Card className="flex items-center gap-4 p-4 transition-colors hover:border-primary">
-      <CreatorAvatar creator={creator} />
-      <div className="min-w-0 flex-1">
-        <div className="flex items-center gap-2">
-          <p className="truncate font-semibold text-neutral-100">
-            {creator.display_name ?? creator.username}
+    <Card className="group flex items-center gap-4 p-4 transition-colors hover:border-primary">
+      <Link to={profileTo} className="flex min-w-0 flex-1 items-center gap-4">
+        <CreatorAvatar creator={creator} />
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            <p className="truncate font-semibold text-neutral-100 transition-colors group-hover:text-primary">
+              {creator.display_name ?? creator.username}
+            </p>
+            {subscribed ? (
+              <Badge tone="success">Suscrito</Badge>
+            ) : (
+              <Badge tone="info">Creador</Badge>
+            )}
+          </div>
+          <p className="text-xs text-neutral-500">
+            @{creator.username}
+            {subscriberCount ? ` · ${subscriberCount} suscriptores` : ''}
           </p>
-          {subscribed ? (
-            <Badge tone="success">Suscrito</Badge>
-          ) : (
-            <Badge tone="info">Creador</Badge>
-          )}
+          {creator.bio ? (
+            <p className="mt-1 line-clamp-1 text-sm text-neutral-400">
+              {creator.bio}
+            </p>
+          ) : null}
         </div>
-        <p className="text-xs text-neutral-500">
-          @{creator.username}
-          {subscriberCount ? ` · ${subscriberCount} suscriptores` : ''}
-        </p>
-        {creator.bio ? (
-          <p className="mt-1 line-clamp-1 text-sm text-neutral-400">{creator.bio}</p>
-        ) : null}
-      </div>
+      </Link>
       <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
         <Link to={`/chat/${creator.username}`}>
           <Button variant="ghost" size="sm">
             <Send className="h-4 w-4" /> Mensaje
           </Button>
         </Link>
-        <Link to={`/c/${creator.username}`}>
+        <Link to={profileTo}>
           <Button size="sm">{subscribed ? 'Ver perfil' : 'Seguir'}</Button>
         </Link>
       </div>

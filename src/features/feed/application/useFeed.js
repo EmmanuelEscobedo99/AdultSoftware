@@ -18,9 +18,9 @@ export function useVideoUrl(path) {
   })
 }
 
-export function useMyEngagements() {
+export function useMyEngagements(userId) {
   return useQuery({
-    queryKey: ['my-engagements'],
+    queryKey: ['my-engagements', userId],
     queryFn: async () => {
       const [likes, bookmarks] = await Promise.all([
         feedService.getMyLikes(),
@@ -28,7 +28,7 @@ export function useMyEngagements() {
       ])
       return { likes, bookmarks }
     },
-    staleTime: 30_000,
+    enabled: Boolean(userId),
   })
 }
 
@@ -63,14 +63,15 @@ export function useDeleteComment(videoId) {
   })
 }
 
-export function useToggleVideoLike() {
+export function useToggleVideoLike(userId) {
   const queryClient = useQueryClient()
+  const key = ['my-engagements', userId]
   return useMutation({
     mutationFn: ({ videoId, liked }) => feedService.toggleLike(videoId, liked),
     onMutate: async ({ videoId, liked }) => {
-      await queryClient.cancelQueries({ queryKey: ['my-engagements'] })
-      const previous = queryClient.getQueryData(['my-engagements'])
-      queryClient.setQueryData(['my-engagements'], (old) => {
+      await queryClient.cancelQueries({ queryKey: key })
+      const previous = queryClient.getQueryData(key)
+      queryClient.setQueryData(key, (old) => {
         if (!old) return old
         const likes = new Set(old.likes)
         if (liked) likes.delete(videoId)
@@ -92,25 +93,26 @@ export function useToggleVideoLike() {
     },
     onError: (_err, _vars, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(['my-engagements'], context.previous)
+        queryClient.setQueryData(key, context.previous)
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['my-engagements'] })
+      queryClient.invalidateQueries({ queryKey: key })
       queryClient.invalidateQueries({ queryKey: ['feed'] })
     },
   })
 }
 
-export function useToggleVideoBookmark() {
+export function useToggleVideoBookmark(userId) {
   const queryClient = useQueryClient()
+  const key = ['my-engagements', userId]
   return useMutation({
     mutationFn: ({ videoId, bookmarked }) =>
       feedService.toggleBookmark(videoId, bookmarked),
     onMutate: async ({ videoId, bookmarked }) => {
-      await queryClient.cancelQueries({ queryKey: ['my-engagements'] })
-      const previous = queryClient.getQueryData(['my-engagements'])
-      queryClient.setQueryData(['my-engagements'], (old) => {
+      await queryClient.cancelQueries({ queryKey: key })
+      const previous = queryClient.getQueryData(key)
+      queryClient.setQueryData(key, (old) => {
         if (!old) return old
         const bookmarks = new Set(old.bookmarks)
         if (bookmarked) bookmarks.delete(videoId)
@@ -121,11 +123,11 @@ export function useToggleVideoBookmark() {
     },
     onError: (_err, _vars, context) => {
       if (context?.previous) {
-        queryClient.setQueryData(['my-engagements'], context.previous)
+        queryClient.setQueryData(key, context.previous)
       }
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['my-engagements'] })
+      queryClient.invalidateQueries({ queryKey: key })
     },
   })
 }

@@ -34,12 +34,13 @@ function timeAgo(date) {
   return new Date(date).toLocaleDateString()
 }
 
-function ActionButton({ label, onClick, children }) {
+function ActionButton({ label, onClick, children, disabled }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="pointer-events-auto flex flex-col items-center gap-1"
+      disabled={disabled}
+      className="pointer-events-auto flex flex-col items-center gap-1 disabled:pointer-events-none disabled:opacity-50"
     >
       {children}
       {label !== undefined ? (
@@ -97,6 +98,7 @@ export function VideoCard({
   onToggleBookmark,
   onToggleFollow,
   likePending,
+  bookmarkPending,
   followPending,
 }) {
   const { data: videoUrl } = useVideoUrl(video?.storage_path)
@@ -204,12 +206,15 @@ export function VideoCard({
       </div>
 
       <div className="absolute bottom-28 right-3 flex flex-col items-center gap-5">
-        <ActionButton label={formatCount(video.like_count)} onClick={() => onToggleLike(video)}>
+        <ActionButton
+          label={formatCount(video.like_count)}
+          onClick={() => onToggleLike(video)}
+          disabled={likePending}
+        >
           <Heart
             className={cn(
               'h-7 w-7 drop-shadow text-white',
               liked && 'fill-red-500 text-red-500',
-              likePending && 'opacity-60',
             )}
           />
         </ActionButton>
@@ -224,7 +229,11 @@ export function VideoCard({
             )}
           />
         </ActionButton>
-        <ActionButton label="Guardar" onClick={() => onToggleBookmark(video)}>
+        <ActionButton
+          label="Guardar"
+          onClick={() => onToggleBookmark(video)}
+          disabled={bookmarkPending}
+        >
           <Bookmark
             className={cn(
               'h-7 w-7 drop-shadow text-white',

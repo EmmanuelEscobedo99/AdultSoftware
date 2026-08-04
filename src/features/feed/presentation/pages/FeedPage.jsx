@@ -25,11 +25,11 @@ export default function FeedPage() {
   const { user } = useAuth()
   const userId = user?.id
   const { data: videos, isLoading } = useFeed()
-  const { data: engagements } = useMyEngagements()
+  const { data: engagements } = useMyEngagements(userId)
   const { data: following } = useMyFollowing(userId)
   const toggleFollowMutation = useToggleFollow(userId)
-  const toggleLikeMutation = useToggleVideoLike()
-  const toggleBookmarkMutation = useToggleVideoBookmark()
+  const toggleLikeMutation = useToggleVideoLike(userId)
+  const toggleBookmarkMutation = useToggleVideoBookmark(userId)
   const [activeId, setActiveId] = useState(null)
 
   const handleToggleLike = (video) => {
@@ -87,6 +87,7 @@ export default function FeedPage() {
           isFollowing={following?.has(video.creator_id)}
           isOwnVideo={video.creator_id === userId}
           likePending={toggleLikeMutation.isPending}
+          bookmarkPending={toggleBookmarkMutation.isPending}
           followPending={toggleFollowMutation.isPending}
           onToggleLike={handleToggleLike}
           onToggleBookmark={handleToggleBookmark}

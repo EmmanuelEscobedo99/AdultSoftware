@@ -55,7 +55,7 @@ export default function FeedPage() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto flex h-[calc(100vh-4rem)] max-w-md items-center justify-center">
+      <div className="mx-auto flex h-full max-w-md items-center justify-center">
         <Skeleton className="h-full w-full rounded-xl" />
       </div>
     )
@@ -63,7 +63,7 @@ export default function FeedPage() {
 
   if (!videos?.length) {
     return (
-      <div className="mx-auto flex h-[calc(100vh-4rem)] max-w-md items-center justify-center px-4">
+      <div className="mx-auto flex h-full max-w-md items-center justify-center px-4">
         <Card className="w-full text-center">
           <p className="text-neutral-300">Aún no hay videos disponibles.</p>
           <p className="mt-1 text-sm text-neutral-500">
@@ -75,7 +75,7 @@ export default function FeedPage() {
   }
 
   return (
-    <div className="mx-auto h-[calc(100vh-4rem)] max-w-md snap-y snap-mandatory overflow-y-scroll px-0">
+    <div className="mx-auto h-full max-w-md snap-y snap-mandatory overflow-y-scroll px-0">
       {videos.map((video) => (
         <FeedItem
           key={video.id}

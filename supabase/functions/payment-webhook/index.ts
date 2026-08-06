@@ -61,7 +61,7 @@ function hexToBuffer(hex: string): Uint8Array {
 async function finalize(paymentId: string, providerTxnId: string) {
   const { data: payment } = await supabase
     .from('payments')
-    .select('id')
+    .select('id, status')
     .eq('id', paymentId)
     .maybeSingle()
 
@@ -70,9 +70,22 @@ async function finalize(paymentId: string, providerTxnId: string) {
     return false
   }
 
+  // Idempotencia: Stripe puede disparar checkout.session.completed y
+  // payment_intent.succeeded para el mismo pago.
+  if (payment.status === 'completed') return true
+
   await supabase.from('payments').update({ provider_payment_id: providerTxnId }).eq('id', paymentId)
   const { error } = await supabase.rpc('finalize_payment', { p_payment_id: paymentId })
   return !error
+}
+
+async function markFailed(paymentId: string) {
+  if (!paymentId) return
+  await supabase
+    .from('payments')
+    .update({ status: 'failed', updated_at: new Date().toISOString() })
+    .eq('id', paymentId)
+    .in('status', ['pending'])
 }
 
 async function handleStripe(bodyText: string, headers: Headers) {

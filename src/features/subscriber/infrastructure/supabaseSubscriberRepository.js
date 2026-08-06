@@ -23,11 +23,13 @@ export const supabaseSubscriberRepository = {
   async getActiveSubscriberCounts() {
     const { data, error } = await supabase
       .from('subscriptions')
-      .select('creator_id, count(*)')
+      .select('creator_id')
       .eq('status', 'active')
     if (error) throw error
     const counts = {}
-    for (const row of data ?? []) counts[row.creator_id] = row.count
+    for (const row of data ?? []) {
+      counts[row.creator_id] = (counts[row.creator_id] ?? 0) + 1
+    }
     return counts
   },
 

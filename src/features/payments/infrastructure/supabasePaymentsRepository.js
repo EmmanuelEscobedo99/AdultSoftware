@@ -1,7 +1,7 @@
 import { supabase } from '@/services/supabase/client'
 
 export const supabasePaymentsRepository = {
-  async checkout({ planId, postId, provider = 'test' }) {
+  async checkout({ planId, postId, provider = 'stripe' }) {
     const { data, error } = await supabase.functions.invoke('create-checkout', {
       body: {
         plan_id: planId ?? null,
@@ -9,9 +9,29 @@ export const supabasePaymentsRepository = {
         provider,
       },
     })
-    if (error) throw error
-    if (data?.ok === false) throw new Error(data.error ?? 'Error en el checkout')
-    return data
+    if (error) {
+      // FunctionsHttpError: leer el body de la Edge Function para mostrar el motivo real.
+      let message = error.message ?? 'Error en el checkout'
+      try {
+        const body = error.context?.json ? await error.context.json() : null
+        if (body?.error) message = body.error
+      } catch {
+        // sin body legible, mantener el mensaje por defecto
+      }
+      throw new Error(message)
+    }
+    // Si la función responde con content-type text/plain, supabase-js devuelve
+    // el JSON como string: lo normalizamos a objeto.
+    let result = data
+    if (typeof data === 'string') {
+      try {
+        result = JSON.parse(data)
+      } catch {
+        throw new Error('Respuesta inesperada del servidor')
+      }
+    }
+    if (result?.ok === false) throw new Error(result.error ?? 'Error en el checkout')
+    return result
   },
 
   async getMyPayments() {

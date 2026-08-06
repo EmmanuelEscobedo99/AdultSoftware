@@ -72,7 +72,6 @@ export function useMyActiveSubscription(creatorId) {
     queryKey: ['my-subscription', creatorId],
     queryFn: () => subscriberService.getMyActiveSubscription(creatorId),
     enabled: Boolean(creatorId),
-    staleTime: 15_000,
   })
 }
 

@@ -51,11 +51,21 @@ function PostMedia({ media, aspect = 'aspect-[4/5]' }) {
   return <img src={url} alt="" className={`${aspect} w-full object-cover`} />
 }
 
+const errorMessages = {
+  unauthorized: 'Sesión expirada. Inicia sesión de nuevo.',
+  plan_no_disponible: 'El plan ya no está disponible.',
+  post_no_disponible: 'Este contenido ya no está disponible.',
+  ya_suscrito: 'Ya tienes una suscripción activa con este creador.',
+  stripe_no_configurado: 'Stripe no está configurado. Inténtalo más tarde.',
+}
+
+const mapError = (message) => errorMessages[message] ?? message
+
 export default function CreatorProfilePage() {
   const { username } = useParams()
   const { user } = useAuth()
   const queryClient = useQueryClient()
-  const [provider, setProvider] = useState('test')
+  const [provider, setProvider] = useState('stripe')
   const [busy, setBusy] = useState(false)
   const { data: creator, isLoading } = useCreatorProfile(username)
   const { data: plans } = useCreatorPlans(creator?.id)
@@ -92,7 +102,7 @@ export default function CreatorProfilePage() {
       queryClient.invalidateQueries({ queryKey: ['my-subscriptions'] })
       queryClient.invalidateQueries({ queryKey: ['my-payments'] })
     } catch (err) {
-      alert(err.message ?? 'No se pudo completar la suscripción')
+      alert(mapError(err.message) ?? 'No se pudo completar la suscripción')
     } finally {
       setBusy(false)
     }
@@ -106,7 +116,7 @@ export default function CreatorProfilePage() {
       queryClient.invalidateQueries({ queryKey: ['my-ppv-unlocks', creator?.id] })
       queryClient.invalidateQueries({ queryKey: ['my-payments'] })
     } catch (err) {
-      alert(err.message ?? 'No se pudo desbloquear el contenido')
+      alert(mapError(err.message) ?? 'No se pudo desbloquear el contenido')
     } finally {
       setBusy(false)
     }
@@ -239,9 +249,19 @@ export default function CreatorProfilePage() {
           ))}
         </div>
         {!plans?.length ? (
-          <p className="text-sm text-neutral-500">
-            Este creador aún no tiene planes disponibles.
-          </p>
+          isOwnProfile ? (
+            <p className="text-sm text-neutral-500">
+              Aún no tienes planes de suscripción.{' '}
+              <Link to="/dashboard/profile" className="text-primary hover:underline">
+                Créalos desde tu perfil
+              </Link>
+              .
+            </p>
+          ) : (
+            <p className="text-sm text-neutral-500">
+              Este creador aún no tiene planes disponibles.
+            </p>
+          )
         ) : null}
       </div>
 

@@ -3,8 +3,9 @@
 //
 // Body: { provider?: 'stripe'|'ccbill'|'segpay'|'test', plan_id?, post_id? }
 //
-// - 'test' (por defecto en dev): crea y finaliza el pago al instante.
-// - 'stripe': crea un PaymentIntent y devuelve client_secret.
+// - 'test' (modo demo): crea y finaliza el pago al instante.
+// - 'stripe': crea una Stripe Checkout Session (página alojada por Stripe)
+//   y devuelve redirect_url. El webhook (payment-webhook) finaliza el pago.
 // - 'ccbill'/'segpay': devuelve la URL de checkout del proveedor.
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.49.1'
@@ -21,6 +22,7 @@ const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Content-Type': 'application/json',
 }
 
 Deno.serve(async (req) => {
@@ -47,7 +49,7 @@ Deno.serve(async (req) => {
     }
 
     const body = await req.json()
-    const provider = body.provider ?? 'test'
+    const provider = body.provider ?? 'stripe'
     const planId = body.plan_id ?? null
     const postId = body.post_id ?? null
 
@@ -61,12 +63,14 @@ Deno.serve(async (req) => {
     // --- Validar objetivo ---
     let creatorId: string | null = null
     let amount = 0
+    let currency = 'usd'
+    let productName = 'Contenido'
     let purpose: 'subscription' | 'ppv_unlock' = planId ? 'subscription' : 'ppv_unlock'
 
     if (planId) {
       const { data: plan } = await supabase
         .from('subscription_plans')
-        .select('creator_id, price, currency')
+        .select('creator_id, name, price, currency')
         .eq('id', planId)
         .eq('is_active', true)
         .maybeSingle()
@@ -77,6 +81,8 @@ Deno.serve(async (req) => {
       }
       creatorId = plan.creator_id
       amount = Number(plan.price)
+      currency = String(plan.currency ?? 'USD').toLowerCase()
+      productName = `Suscripción a ${plan.name}`
 
       const { data: activeSub } = await supabase
         .from('subscriptions')
@@ -93,7 +99,7 @@ Deno.serve(async (req) => {
     } else if (postId) {
       const { data: post } = await supabase
         .from('creator_posts')
-        .select('creator_id, price')
+        .select('creator_id, title, price')
         .eq('id', postId)
         .eq('visibility', 'ppv')
         .maybeSingle()
@@ -104,6 +110,7 @@ Deno.serve(async (req) => {
       }
       creatorId = post.creator_id
       amount = Number(post.price ?? 0)
+      productName = post.title && post.title.trim() ? post.title.trim() : 'Contenido premium'
 
       const { data: alreadyUnlocked } = await supabase
         .from('payments')
@@ -115,7 +122,12 @@ Deno.serve(async (req) => {
         .maybeSingle()
       if (alreadyUnlocked) {
         return new Response(
-          JSON.stringify({ ok: true, payment_id: alreadyUnlocked.id, provider: 'test', already_unlocked: true }),
+          JSON.stringify({
+            ok: true,
+            payment_id: alreadyUnlocked.id,
+            provider,
+            already_unlocked: true,
+          }),
           { status: 200, headers: corsHeaders },
         )
       }
@@ -133,9 +145,9 @@ Deno.serve(async (req) => {
         provider,
         provider_payment_id: null,
         amount,
-        currency: 'USD',
+        currency: currency.toUpperCase(),
         status: 'pending',
-        metadata: { provider },
+        metadata: { provider, product_name: productName },
       })
       .select('*')
       .single()
@@ -154,20 +166,32 @@ Deno.serve(async (req) => {
       )
     }
 
-    // --- Stripe ---
+    // --- Stripe: Checkout Session (página de pago alojada) ---
     if (provider === 'stripe') {
       if (!STRIPE_SECRET_KEY) {
         return new Response(JSON.stringify({ error: 'stripe_no_configurado' }), {
           status: 500, headers: corsHeaders,
         })
       }
-      const intent = await createStripePaymentIntent(payment.id, amount, purpose)
+      const session = await createStripeCheckoutSession({
+        paymentId: payment.id,
+        userEmail: user.email,
+        amount,
+        currency,
+        productName,
+        purpose,
+      })
       await supabase
         .from('payments')
-        .update({ provider_payment_id: intent.id })
+        .update({ provider_payment_id: session.id })
         .eq('id', payment.id)
       return new Response(
-        JSON.stringify({ ok: true, payment_id: payment.id, client_secret: intent.client_secret }),
+        JSON.stringify({
+          ok: true,
+          payment_id: payment.id,
+          redirect_url: session.url,
+          provider: 'stripe',
+        }),
         { status: 200, headers: corsHeaders },
       )
     }
@@ -190,18 +214,37 @@ Deno.serve(async (req) => {
   }
 })
 
-async function createStripePaymentIntent(paymentId: string, amount: number, purpose: string) {
-  const res = await fetch('https://api.stripe.com/v1/payment_intents', {
+async function createStripeCheckoutSession(params: {
+  paymentId: string
+  userEmail?: string
+  amount: number
+  currency: string
+  productName: string
+  purpose: string
+}) {
+  const body = new URLSearchParams({
+    mode: 'payment',
+    'success_url': `${SITE_URL}/dashboard/payments?success=1&payment_id=${params.paymentId}`,
+    'cancel_url': `${SITE_URL}/dashboard/payments?cancelled=1`,
+    'client_reference_id': params.paymentId,
+    'metadata[payment_id]': params.paymentId,
+    'metadata[purpose]': params.purpose,
+    'line_items[0][quantity]': '1',
+    'line_items[0][price_data][currency]': params.currency,
+    'line_items[0][price_data][unit_amount]': String(Math.round(params.amount * 100)),
+    'line_items[0][price_data][product_data][name]': params.productName,
+  })
+  if (params.userEmail) {
+    body.set('customer_email', params.userEmail)
+  }
+
+  const res = await fetch('https://api.stripe.com/v1/checkout/sessions', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${STRIPE_SECRET_KEY}`,
       'Content-Type': 'application/x-www-form-urlencoded',
     },
-    body: new URLSearchParams({
-      amount: String(Math.round(amount * 100)),
-      currency: 'usd',
-      metadata: `payment_id=${paymentId},purpose=${purpose}`,
-    }),
+    body,
   })
   const json = await res.json()
   if (!res.ok) throw new Error(`Stripe ${res.status}: ${JSON.stringify(json)}`)

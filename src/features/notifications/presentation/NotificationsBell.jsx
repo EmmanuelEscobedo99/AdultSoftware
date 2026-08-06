@@ -9,7 +9,7 @@ import {
   useMarkAllNotificationsRead,
   useNotificationsRealtime,
 } from '../application/useNotifications'
-import { Bell, CheckCheck, Heart, Lock, MessageSquare, Upload, Users } from 'lucide-react'
+import { Bell, CheckCheck, CreditCard, Heart, Lock, MessageSquare, Upload, Users } from 'lucide-react'
 
 function timeAgo(date) {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000)
@@ -27,8 +27,10 @@ function notificationMeta(type) {
   switch (type) {
     case 'follow':
       return { Icon: Users, text: (actor) => `${actor?.display_name ?? actor?.username ?? 'Alguien'} comenzó a seguirte` }
+    case 'subscription':
+      return { Icon: CreditCard, text: (actor) => `${actor?.display_name ?? actor?.username ?? 'Alguien'} se suscribió a tu perfil` }
     case 'ppv_unlock':
-      return { Icon: Lock, text: () => 'Alguien desbloqueó tu contenido premium' }
+      return { Icon: Lock, text: (actor) => `${actor?.display_name ?? actor?.username ?? 'Alguien'} compró tu contenido premium` }
     case 'new_post':
       return { Icon: Upload, text: () => 'Tienes una nueva publicación' }
     case 'message':

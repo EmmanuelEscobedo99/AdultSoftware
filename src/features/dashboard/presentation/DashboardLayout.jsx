@@ -18,6 +18,7 @@ function getNavByRole(role) {
     { to: '/dashboard/creator/subscriptions', label: 'Suscripciones', end: false },
     { to: '/dashboard/creator/chat', label: 'Chat', end: false },
     { to: '/dashboard/creator/ai', label: 'Agente IA', end: false },
+    { to: '/dashboard/creator/payouts', label: 'Pagos y cobros', end: false },
   ]
   const subscriber = [
     { to: '/dashboard/my-subscriptions', label: 'Mis suscripciones', end: false },

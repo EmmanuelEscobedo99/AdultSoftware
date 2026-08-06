@@ -14,6 +14,18 @@ export const paymentsService = {
   getMyPayouts() {
     return supabasePaymentsRepository.getMyPayouts()
   },
+  getPayoutMethod(creatorId) {
+    return supabasePaymentsRepository.getPayoutMethod(creatorId)
+  },
+  upsertPayoutMethod(method) {
+    return supabasePaymentsRepository.upsertPayoutMethod(method)
+  },
+  getCreatorEarnings() {
+    return supabasePaymentsRepository.getCreatorEarnings()
+  },
+  requestPayout() {
+    return supabasePaymentsRepository.requestPayout()
+  },
   getAllPayments() {
     return supabasePaymentsRepository.getAllPayments()
   },

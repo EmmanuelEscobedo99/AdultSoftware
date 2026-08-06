@@ -61,6 +61,38 @@ export const supabasePaymentsRepository = {
     return data ?? []
   },
 
+  async getPayoutMethod(creatorId) {
+    const { data, error } = await supabase
+      .from('payout_methods')
+      .select('*')
+      .eq('creator_id', creatorId)
+      .maybeSingle()
+    if (error) throw error
+    return data
+  },
+
+  async upsertPayoutMethod(method) {
+    const { data, error } = await supabase
+      .from('payout_methods')
+      .upsert(method, { onConflict: 'creator_id' })
+      .select('*')
+      .single()
+    if (error) throw error
+    return data
+  },
+
+  async getCreatorEarnings() {
+    const { data, error } = await supabase.rpc('get_creator_earnings')
+    if (error) throw error
+    return data
+  },
+
+  async requestPayout() {
+    const { data, error } = await supabase.rpc('request_payout')
+    if (error) throw error
+    return data
+  },
+
   async getAllPayments() {
     const { data, error } = await supabase
       .from('payments')

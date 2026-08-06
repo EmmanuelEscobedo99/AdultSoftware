@@ -20,6 +20,7 @@ import CreatePostPage from '@/features/creator/presentation/pages/CreatePostPage
 import SubscriptionsManagerPage from '@/features/creator/presentation/pages/SubscriptionsManagerPage'
 import AiAgentPage from '@/features/creator/presentation/pages/AiAgentPage'
 import MyPaymentsPage from '@/features/payments/presentation/pages/MyPaymentsPage'
+import CreatorPayoutsPage from '@/features/payments/presentation/pages/CreatorPayoutsPage'
 import AdminPaymentsPage from '@/features/payments/presentation/pages/AdminPaymentsPage'
 import AdminPage from '@/features/admin/presentation/pages/AdminPage'
 import ModerationPage from '@/features/admin/presentation/pages/ModerationPage'
@@ -80,6 +81,7 @@ export const router = createBrowserRouter([
               { path: 'subscriptions', element: <SubscriptionsManagerPage /> },
               { path: 'chat', element: <ChatPage /> },
               { path: 'ai', element: <AiAgentPage /> },
+              { path: 'payouts', element: <CreatorPayoutsPage /> },
             ],
           },
         ],

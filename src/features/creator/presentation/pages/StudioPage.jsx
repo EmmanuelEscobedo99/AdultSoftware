@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/Button'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { useAuth } from '@/features/auth/application/AuthProvider'
 import { useCreatorPosts } from '../../application/useCreatorPosts'
-import { FileText, MessageSquare, Sparkles, Users } from 'lucide-react'
+import { DollarSign, FileText, MessageSquare, Sparkles, Users } from 'lucide-react'
 
 export default function StudioPage() {
   const { profile } = useAuth()
@@ -20,7 +20,7 @@ export default function StudioPage() {
         </p>
       </header>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <Link to="/dashboard/creator/content" className="block">
           <Card className="h-full transition-colors hover:border-primary">
             <CardHeader>
@@ -66,6 +66,18 @@ export default function StudioPage() {
               </CardTitle>
             </CardHeader>
             <CardDescription>Automatiza respuestas y ventas</CardDescription>
+          </Card>
+        </Link>
+
+        <Link to="/dashboard/creator/payouts" className="block">
+          <Card className="h-full transition-colors hover:border-primary">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <DollarSign className="h-5 w-5 text-primary" />
+                Pagos y cobros
+              </CardTitle>
+            </CardHeader>
+            <CardDescription>Configura tu método de pago y cobra</CardDescription>
           </Card>
         </Link>
       </div>

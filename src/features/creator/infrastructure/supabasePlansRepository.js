@@ -1,5 +1,10 @@
 import { supabase } from '@/services/supabase/client'
 
+async function getUserId() {
+  const { data } = await supabase.auth.getUser()
+  return data?.user?.id ?? null
+}
+
 export const supabasePlansRepository = {
   async listMyPlans() {
     const { data, error } = await supabase
@@ -11,9 +16,12 @@ export const supabasePlansRepository = {
   },
 
   async createPlan({ name, price, currency, billing_interval, description }) {
+    const creatorId = await getUserId()
+    if (!creatorId) throw new Error('No autenticado')
     const { data, error } = await supabase
       .from('subscription_plans')
       .insert({
+        creator_id: creatorId,
         name,
         price,
         currency,

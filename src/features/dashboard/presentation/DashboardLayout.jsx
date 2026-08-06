@@ -34,7 +34,10 @@ function getNavByRole(role) {
   if ([ROLES.SUPER_ADMIN, ROLES.ADMIN, ROLES.MODERATOR, ROLES.SUPPORT].includes(role)) {
     return [...common, ...subscriber, ...admin]
   }
-  if (role === ROLES.CREATOR) return [...common, ...creator, ...subscriber]
+  if (role === ROLES.CREATOR) {
+    const subscriberWithoutChat = subscriber.filter((item) => item.label !== 'Chat')
+    return [...common, ...creator, ...subscriberWithoutChat]
+  }
   return [...common, ...subscriber]
 }
 

@@ -2,11 +2,16 @@ import { useEffect, useMemo, useState } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/services/supabase/client'
 import { useAuth } from '@/features/auth/application/AuthProvider'
+import { useProfileImage } from '@/features/dashboard/application/useProfile'
 import { Button } from '@/components/ui/Button'
 import { useConversations } from '../../application/useChat'
-import { ConversationList, isConversationUnread } from './ConversationList'
+import {
+  ConversationList,
+  getOtherParticipant,
+  isConversationUnread,
+} from './ConversationList'
 import { ChatWindow } from './ChatWindow'
-import { ArrowLeft, MessageCircle, X } from 'lucide-react'
+import { ArrowLeft, MessageCircle, User, X } from 'lucide-react'
 
 export default function FloatingChat() {
   const { user } = useAuth()
@@ -21,6 +26,14 @@ export default function FloatingChat() {
         .length,
     [conversations, user.id],
   )
+
+  const activeConversation = conversations?.find((c) => c.id === activeId)
+  const other = activeConversation
+    ? getOtherParticipant(activeConversation, user.id)
+    : null
+  const { data: otherAvatarUrl } = useProfileImage(other?.profile?.avatar_url)
+  const otherName =
+    other?.profile?.display_name ?? other?.profile?.username ?? 'Chat'
 
   useEffect(() => {
     const channel = supabase
@@ -38,8 +51,6 @@ export default function FloatingChat() {
     }
   }, [queryClient])
 
-  const activeConversation = conversations?.find((c) => c.id === activeId)
-
   const handleOpenConversation = (id) => {
     setActiveId(id)
   }
@@ -55,25 +66,43 @@ export default function FloatingChat() {
         <div className="flex h-[32rem] w-[22rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-line bg-surface-2 shadow-2xl">
           <div className="flex items-center gap-2 border-b border-line px-3 py-2.5">
             {activeId ? (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => setActiveId(null)}
-                title="Volver a conversaciones"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
+              <>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 shrink-0"
+                  onClick={() => setActiveId(null)}
+                  title="Volver a conversaciones"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-3">
+                  {otherAvatarUrl ? (
+                    <img
+                      src={otherAvatarUrl}
+                      alt={otherName}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <User className="h-4 w-4 text-neutral-500" />
+                  )}
+                </div>
+                <p className="min-w-0 flex-1 truncate text-sm font-semibold text-neutral-100">
+                  {otherName}
+                </p>
+              </>
             ) : (
-              <MessageCircle className="h-5 w-5 text-primary" />
+              <>
+                <MessageCircle className="h-5 w-5 shrink-0 text-primary" />
+                <p className="min-w-0 flex-1 truncate text-sm font-semibold text-neutral-100">
+                  Mensajes
+                </p>
+              </>
             )}
-            <p className="flex-1 truncate text-sm font-semibold text-neutral-100">
-              {activeId ? 'Chat' : 'Mensajes'}
-            </p>
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8"
+              className="h-8 w-8 shrink-0"
               onClick={handleClose}
               title="Cerrar"
             >

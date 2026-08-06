@@ -8,6 +8,15 @@ import { useConversations, useStartConversation } from '../../application/useCha
 import { ConversationList, getOtherParticipant } from '../components/ConversationList'
 import { ChatWindow } from '../components/ChatWindow'
 
+const chatErrorMessages = {
+  not_authorized_to_chat:
+    'Debes suscribirte a este creador para poder enviarle mensajes.',
+  cannot_chat_with_self: 'No puedes enviarte mensajes a ti mismo.',
+  banned: 'No tienes permitido enviar mensajes.',
+}
+
+const mapChatError = (message) => chatErrorMessages[message] ?? message
+
 export default function ChatPage() {
   const { username } = useParams()
   const { user } = useAuth()
@@ -45,7 +54,7 @@ export default function ChatPage() {
       setConversationId(id)
       setFirstMessage('')
     } catch (err) {
-      alert(err.message ?? 'No se pudo iniciar la conversación')
+      alert(mapChatError(err.message) ?? 'No se pudo iniciar la conversación')
     } finally {
       setStarting(false)
     }

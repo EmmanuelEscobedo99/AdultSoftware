@@ -39,7 +39,7 @@ export function useCreatorPlans(creatorId) {
     queryKey: ['creator-plans', creatorId],
     queryFn: () => subscriberService.listPlans(creatorId),
     enabled: Boolean(creatorId),
-    staleTime: 30_000,
+    staleTime: 0,
   })
 }
 

@@ -19,10 +19,19 @@ export function useMessages(conversationId) {
   })
 }
 
+export function useMediaUrl(path) {
+  return useQuery({
+    queryKey: ['chat-media-url', path],
+    queryFn: () => chatService.getMediaUrl(path),
+    enabled: Boolean(path),
+    staleTime: 60 * 60 * 1000,
+  })
+}
+
 export function useSendMessage(conversationId) {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (body) => chatService.sendMessage(conversationId, body),
+    mutationFn: ({ body, media }) => chatService.sendMessage(conversationId, body, media),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages', conversationId] })
       queryClient.invalidateQueries({ queryKey: ['conversations'] })
@@ -33,8 +42,18 @@ export function useSendMessage(conversationId) {
 export function useStartConversation() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ username, body }) =>
-      chatService.startConversation(username, body),
+    mutationFn: ({ username, body, media }) =>
+      chatService.startConversation(username, body, media),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['conversations'] })
+    },
+  })
+}
+
+export function useMarkRead(conversationId) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: () => chatService.markRead(conversationId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['conversations'] })
     },

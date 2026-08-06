@@ -8,6 +8,12 @@ export function getOtherParticipant(conversation, myUserId) {
   )
 }
 
+export function isConversationUnread(conversation, myUserId) {
+  const mine = conversation?.participants?.find((p) => p.user_id === myUserId)
+  if (!mine?.last_read_at) return Boolean(conversation?.last_message_at)
+  return new Date(mine.last_read_at) < new Date(conversation.last_message_at)
+}
+
 export function ConversationList({ conversations, activeId, onSelect }) {
   const { user } = useAuth()
 
@@ -20,6 +26,7 @@ export function ConversationList({ conversations, activeId, onSelect }) {
         <ul>
           {conversations.map((conversation) => {
             const other = getOtherParticipant(conversation, user.id)
+            const unread = isConversationUnread(conversation, user.id)
             return (
               <li key={conversation.id}>
                 <button
@@ -29,11 +36,19 @@ export function ConversationList({ conversations, activeId, onSelect }) {
                     activeId === conversation.id && 'bg-surface-2',
                   )}
                 >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-3">
+                  <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-3">
                     <User className="h-5 w-5 text-neutral-500" />
+                    {unread ? (
+                      <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-surface bg-sky-500" />
+                    ) : null}
                   </div>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-neutral-100">
+                  <div className="min-w-0 flex-1">
+                    <p
+                      className={cn(
+                        'truncate text-sm',
+                        unread ? 'font-semibold text-neutral-100' : 'font-medium text-neutral-200',
+                      )}
+                    >
                       {other?.profile?.display_name ?? other?.profile?.username ?? 'Chat'}
                     </p>
                     <p className="truncate text-xs text-neutral-500">
@@ -42,6 +57,9 @@ export function ConversationList({ conversations, activeId, onSelect }) {
                         : ''}
                     </p>
                   </div>
+                  {unread ? (
+                    <span className="h-2 w-2 shrink-0 rounded-full bg-sky-500" />
+                  ) : null}
                 </button>
               </li>
             )

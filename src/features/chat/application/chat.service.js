@@ -9,17 +9,26 @@ export const chatService = {
     return supabaseChatRepository.getMessages(conversationId)
   },
 
-  async startConversation(targetUsername, body) {
+  async startConversation(targetUsername, body, media = null) {
     const target = await supabaseChatRepository.resolveUserId(targetUsername)
     if (!target) throw new Error('Usuario no encontrado')
-    if (target.role === 'creator') {
-      return supabaseChatRepository.startConversation(target.id, body)
+    const myRole = await supabaseChatRepository.getMyRole()
+    if (target.role !== 'creator' && myRole !== 'creator') {
+      throw new Error('Solo puedes chatear con creadores')
     }
-    throw new Error('Solo puedes chatear con creadores')
+    return supabaseChatRepository.startConversation(target.id, body, media)
   },
 
-  sendMessage(conversationId, body) {
-    return supabaseChatRepository.sendMessage(conversationId, body)
+  sendMessage(conversationId, body, media = null) {
+    return supabaseChatRepository.sendMessage(conversationId, body, media)
+  },
+
+  uploadMedia(conversationId, file) {
+    return supabaseChatRepository.uploadMedia(conversationId, file)
+  },
+
+  getMediaUrl(path) {
+    return supabaseChatRepository.getMediaUrl(path)
   },
 
   markRead(conversationId) {

@@ -3,6 +3,7 @@ import { ROLE_LEVELS } from '@/lib/constants'
 import { useAuth } from '@/features/auth/application/AuthProvider'
 import { FullPageLoader } from '@/components/ui/Loader'
 import ForbiddenPage from '@/pages/ForbiddenPage'
+import FloatingChat from '@/features/chat/presentation/components/FloatingChat'
 
 /** Requiere sesión iniciada. */
 export function ProtectedRoute() {
@@ -15,7 +16,12 @@ export function ProtectedRoute() {
     return <Navigate to="/auth/login" state={{ from: location }} replace />
   }
 
-  return <Outlet />
+  return (
+    <>
+      <Outlet />
+      <FloatingChat />
+    </>
+  )
 }
 
 /** Solo accesible sin sesión (login, registro, recuperación). */

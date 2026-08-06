@@ -30,7 +30,7 @@ src/
   pages/         páginas globales (landing, 404, 403)
 
 supabase/
-  migrations/     migraciones SQL (0001..0022): tablas, RLS, triggers, RPCs
+  migrations/     migraciones SQL (0001..0024): tablas, RLS, triggers, RPCs
   functions/      Edge Functions (ai-agent-reply, create-checkout, payment-webhook)
 ```
 

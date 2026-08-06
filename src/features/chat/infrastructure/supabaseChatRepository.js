@@ -1,12 +1,28 @@
 import { supabase } from '@/services/supabase/client'
 
-const CHAT_BUCKET = 'chat-media'
 const CHAT_IMAGE_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
 const CHAT_VIDEO_TYPES = new Set(['video/mp4', 'video/webm', 'video/quicktime'])
 
-function extensionOf(name) {
-  const match = /\.([a-zA-Z0-9]+)$/.exec(name ?? '')
-  return match ? `.${match[1]}` : ''
+function readFunctionError(error) {
+  let message = error?.message ?? 'Error en el chat'
+  try {
+    const inner = error?.context?.json ? error.context.json() : null
+    if (inner?.error) message = inner.error
+  } catch {
+    // sin body legible, mantener el mensaje por defecto
+  }
+  return message
+}
+
+function parseData(data) {
+  if (typeof data === 'string') {
+    try {
+      return JSON.parse(data)
+    } catch {
+      return null
+    }
+  }
+  return data
 }
 
 export const supabaseChatRepository = {
@@ -72,21 +88,32 @@ export const supabaseChatRepository = {
     if (!mediaType) {
       throw new Error('Formato no permitido. Usa imágenes (JPG, PNG, WebP, GIF) o videos (MP4, WebM).')
     }
-    const path = `${conversationId}/${crypto.randomUUID()}${extensionOf(file.name)}`
-    const { error } = await supabase.storage
-      .from(CHAT_BUCKET)
-      .upload(path, file, { upsert: false, contentType: file.type })
-    if (error) throw error
-    return { path, mediaType }
+    const form = new FormData()
+    form.append('action', 'upload')
+    form.append('conversation_id', conversationId)
+    form.append('file', file)
+    const { data, error } = await supabase.functions.invoke('chat-media', { body: form })
+    if (error) throw new Error(readFunctionError(error))
+    const result = parseData(data)
+    if (result?.error) throw new Error(result.error)
+    return { path: result.path, mediaType: result.mediaType ?? mediaType }
   },
 
   async getMediaUrl(path) {
     if (!path) return null
-    const { data, error } = await supabase.storage
-      .from(CHAT_BUCKET)
-      .createSignedUrl(path, 60 * 60)
-    if (error) throw error
-    return data?.signedUrl ?? null
+    const { data, error } = await supabase.functions.invoke('chat-media', {
+      body: { action: 'sign', path },
+    })
+    if (error) {
+      console.error('getMediaUrl', readFunctionError(error))
+      return null
+    }
+    const result = parseData(data)
+    if (result?.error) {
+      console.error('getMediaUrl', result.error)
+      return null
+    }
+    return result?.url ?? null
   },
 
   async getMyRole() {

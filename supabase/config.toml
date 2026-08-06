@@ -6,6 +6,9 @@ project_id = "creatorhub"
 [functions.ai-agent-reply]
 verify_jwt = true
 
+[functions.chat-media]
+verify_jwt = true
+
 [functions.create-checkout]
 verify_jwt = true
 

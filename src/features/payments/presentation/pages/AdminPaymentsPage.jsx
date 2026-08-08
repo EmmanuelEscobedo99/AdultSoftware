@@ -2,6 +2,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/Ca
 import { Badge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useAdminPayments, useAdminPayouts } from '../../application/usePayments'
+import { Banknote, CreditCard } from 'lucide-react'
 
 const statusTone = {
   completed: 'success',
@@ -19,16 +20,26 @@ export default function AdminPaymentsPage() {
 
   return (
     <div className="max-w-5xl space-y-8">
-      <header>
-        <h1 className="text-2xl font-bold text-neutral-100">Pagos</h1>
-        <p className="mt-1 text-sm text-neutral-400">
-          Transacciones y pagos a creadores (payouts).
-        </p>
+      <header className="flex items-center gap-3">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-glow">
+          <CreditCard className="h-6 w-6" />
+        </span>
+        <div>
+          <h1 className="text-2xl font-bold text-neutral-100">Pagos</h1>
+          <p className="mt-1 text-sm text-neutral-400">
+            Transacciones y pagos a creadores (payouts).
+          </p>
+        </div>
       </header>
 
       <Card>
         <CardHeader>
-          <CardTitle>Pagos</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gradient text-white">
+              <CreditCard className="h-4 w-4" />
+            </span>
+            Pagos
+          </CardTitle>
           <CardDescription>Últimas 200 transacciones.</CardDescription>
         </CardHeader>
         {isLoading ? (
@@ -67,7 +78,12 @@ export default function AdminPaymentsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Payouts a creadores</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gradient text-white">
+              <Banknote className="h-4 w-4" />
+            </span>
+            Payouts a creadores
+          </CardTitle>
         </CardHeader>
         {payouts?.length ? (
           <div>

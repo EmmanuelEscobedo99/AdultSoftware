@@ -13,7 +13,7 @@ import {
   useRequestPayout,
   useUpsertPayoutMethod,
 } from '../../application/usePayments'
-import { DollarSign, Landmark, Wallet } from 'lucide-react'
+import { BadgeDollarSign, DollarSign, Landmark, Wallet } from 'lucide-react'
 
 const PROVIDERS = [
   { value: 'bank', label: 'Transferencia bancaria' },
@@ -51,11 +51,13 @@ function formatMoney(value) {
 
 function StatCard({ label, value, hint }) {
   return (
-    <Card className="p-4">
-      <p className="text-xs text-neutral-500">{label}</p>
-      <p className="mt-1 text-2xl font-bold text-neutral-100">{value}</p>
+    <div className="rounded-2xl border border-line/70 bg-surface-2/70 p-4 shadow-card backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-glow">
+      <p className="text-xs font-medium uppercase tracking-wide text-neutral-500">
+        {label}
+      </p>
+      <p className="mt-2 text-2xl font-bold text-gradient">{value}</p>
       {hint ? <p className="mt-1 text-xs text-neutral-500">{hint}</p> : null}
-    </Card>
+    </div>
   )
 }
 
@@ -124,11 +126,16 @@ export default function CreatorPayoutsPage() {
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold text-neutral-100">Pagos y cobros</h1>
-        <p className="mt-1 text-sm text-neutral-400">
-          Configura dónde recibes tu dinero y solicita tus ganancias del mes.
-        </p>
+      <header className="flex items-center gap-3">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-glow">
+          <BadgeDollarSign className="h-6 w-6" />
+        </span>
+        <div>
+          <h1 className="text-2xl font-bold text-neutral-100">Pagos y cobros</h1>
+          <p className="mt-1 text-sm text-neutral-400">
+            Configura dónde recibes tu dinero y solicita tus ganancias del mes.
+          </p>
+        </div>
       </header>
 
       {/* Resumen del mes */}
@@ -167,7 +174,9 @@ export default function CreatorPayoutsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Wallet className="h-5 w-5 text-primary" />
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-gradient text-white">
+              <Wallet className="h-4 w-4" />
+            </span>
             Saldo pendiente de cobro
           </CardTitle>
           <CardDescription>
@@ -176,10 +185,10 @@ export default function CreatorPayoutsPage() {
         </CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-4 p-4">
           <div>
-            <p className="text-2xl font-bold text-neutral-100">
+            <p className="text-3xl font-bold text-gradient">
               {formatMoney(earnings?.pending_net)}
             </p>
-            <p className="text-xs text-neutral-500">
+            <p className="mt-1 text-xs text-neutral-500">
               Bruto pendiente: {formatMoney(earnings?.pending_gross)}
             </p>
           </div>
@@ -203,7 +212,9 @@ export default function CreatorPayoutsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Landmark className="h-5 w-5 text-primary" />
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-gradient text-white">
+              <Landmark className="h-4 w-4" />
+            </span>
             Método de pago
           </CardTitle>
           <CardDescription>
@@ -223,7 +234,7 @@ export default function CreatorPayoutsPage() {
                 id="provider"
                 value={provider}
                 onChange={(e) => setProvider(e.target.value)}
-                className="mt-1 w-full rounded-lg border border-line bg-surface-3 px-3 py-2 text-sm text-neutral-200 outline-none focus:border-primary"
+                className="mt-1 w-full rounded-xl border border-line bg-surface-3 px-3.5 py-2.5 text-sm text-neutral-200 shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)] outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30"
               >
                 {PROVIDERS.map((option) => (
                   <option key={option.value} value={option.value}>

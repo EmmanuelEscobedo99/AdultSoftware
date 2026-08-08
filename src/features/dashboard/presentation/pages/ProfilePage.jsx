@@ -9,6 +9,7 @@ import { Input, Textarea } from '@/components/ui/Input'
 import { Label, FieldError } from '@/components/ui/Label'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
+import { Segmented } from '@/components/ui/Segmented'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { ROLES, ROLE_LABELS } from '@/lib/constants'
 import { useAuth } from '@/features/auth/application/AuthProvider'
@@ -203,7 +204,8 @@ export default function ProfilePage() {
     <div className="mx-auto max-w-4xl space-y-6">
       {/* Portada */}
       <div className="relative">
-        <div className="relative h-52 w-full overflow-hidden rounded-2xl border border-line bg-gradient-to-br from-fuchsia-700/40 via-purple-700/30 to-pink-700/40 sm:h-64">
+        <div className="relative h-52 w-full overflow-hidden rounded-2xl border border-line/70 bg-gradient-to-br from-fuchsia-700/40 via-purple-700/30 to-pink-700/40 shadow-card sm:h-64">
+          <div className="absolute inset-0 bg-grid opacity-30" />
           {coverUrl ? (
             <img
               src={coverUrl}
@@ -236,18 +238,20 @@ export default function ProfilePage() {
 
         {/* Avatar */}
         <div className="absolute -bottom-12 left-6">
-          <div className="relative">
-            <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full border-4 border-surface bg-surface-3">
-              {avatarUrl ? (
-                <img
-                  src={avatarUrl}
-                  alt="Avatar"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <Users className="h-10 w-10 text-neutral-500" />
-              )}
-            </div>
+            <div className="relative">
+              <div className="flex h-28 w-28 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-primary to-accent p-[3px] shadow-[0_10px_30px_-10px_rgba(225,29,99,0.6)]">
+                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-4 border-surface bg-surface-3">
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt="Avatar"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <Users className="h-10 w-10 text-neutral-500" />
+                  )}
+                </div>
+              </div>
             <input
               ref={avatarInputRef}
               type="file"
@@ -416,26 +420,16 @@ export default function ProfilePage() {
 
               <div>
                 <Label>Ciclo de facturación</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
+                <Segmented
+                  className="grid-cols-3"
+                  options={[
                     { value: 'monthly', label: 'Mensual' },
                     { value: 'quarterly', label: 'Trimestral' },
                     { value: 'yearly', label: 'Anual' },
-                  ].map((option) => (
-                    <label
-                      key={option.value}
-                      className="flex cursor-pointer items-center justify-center rounded-lg border border-line bg-surface-3 px-2 py-2 text-sm text-neutral-200 has-checked:border-primary has-checked:text-primary"
-                    >
-                      <input
-                        type="radio"
-                        value={option.value}
-                        className="sr-only"
-                        {...planForm.register('billing_interval')}
-                      />
-                      {option.label}
-                    </label>
-                  ))}
-                </div>
+                  ]}
+                  error={planErrors.billing_interval}
+                  {...planForm.register('billing_interval')}
+                />
                 <FieldError message={planErrors.billing_interval?.message} />
               </div>
 

@@ -4,6 +4,7 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/Ca
 import { Badge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { useMyPayments } from '../../application/usePayments'
+import { CreditCard } from 'lucide-react'
 
 const statusTone = {
   completed: 'success',
@@ -31,11 +32,16 @@ export default function MyPaymentsPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold text-neutral-100">Mis pagos</h1>
-        <p className="mt-1 text-sm text-neutral-400">
-          Historial de suscripciones y desbloqueos PPV.
-        </p>
+      <header className="flex items-center gap-3">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-glow">
+          <CreditCard className="h-6 w-6" />
+        </span>
+        <div>
+          <h1 className="text-2xl font-bold text-neutral-100">Mis pagos</h1>
+          <p className="mt-1 text-sm text-neutral-400">
+            Historial de suscripciones y desbloqueos PPV.
+          </p>
+        </div>
       </header>
 
       {success ? (

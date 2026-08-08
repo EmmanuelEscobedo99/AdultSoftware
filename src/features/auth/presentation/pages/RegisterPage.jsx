@@ -4,6 +4,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Label, FieldError } from '@/components/ui/Label'
+import { Segmented } from '@/components/ui/Segmented'
 import { ROLES } from '@/lib/constants'
 import { registerSchema } from '../../domain/auth.schema'
 import { useAuth } from '../../application/AuthProvider'
@@ -20,7 +21,7 @@ export default function RegisterPage() {
     formState: { errors, isSubmitting },
   } = useForm({
     resolver: zodResolver(registerSchema),
-    defaultValues: { role: ROLES.SUBSCRIBER },
+    defaultValues: { role: ROLES.SUBSCRIBER, ageConfirm: false },
   })
 
   if (user) return <Navigate to="/dashboard" replace />
@@ -91,25 +92,15 @@ export default function RegisterPage() {
 
         <div>
           <Label>Quiero registrarme como</Label>
-          <div className="grid grid-cols-2 gap-3">
-            {[
+          <Segmented
+            className="grid-cols-2"
+            error={errors.role}
+            options={[
               { value: ROLES.SUBSCRIBER, label: 'Suscriptor' },
               { value: ROLES.CREATOR, label: 'Creador' },
-            ].map((option) => (
-              <label
-                key={option.value}
-                className="flex cursor-pointer items-center justify-center rounded-lg border border-line bg-surface-3 px-3 py-2.5 text-sm text-neutral-200 has-checked:border-primary has-checked:text-primary"
-              >
-                <input
-                  type="radio"
-                  value={option.value}
-                  className="sr-only"
-                  {...register('role')}
-                />
-                {option.label}
-              </label>
-            ))}
-          </div>
+            ]}
+            {...register('role')}
+          />
           <FieldError message={errors.role?.message} />
         </div>
 
@@ -136,6 +127,19 @@ export default function RegisterPage() {
           />
           <FieldError message={errors.confirmPassword?.message} />
         </div>
+
+        <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-line bg-surface-3/60 p-3 transition-colors has-checked:border-primary/50">
+          <input
+            type="checkbox"
+            className="mt-0.5 h-4 w-4 shrink-0 accent-[#e11d63]"
+            {...register('ageConfirm')}
+          />
+          <span className="text-xs leading-relaxed text-neutral-400">
+            Confirmo que soy mayor de 18 años y que entiendo que este sitio
+            contiene contenido para adultos.
+          </span>
+        </label>
+        <FieldError message={errors.ageConfirm?.message} />
 
         {errors.root ? (
           <p className="text-sm text-red-400">{errors.root.message}</p>

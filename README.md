@@ -34,6 +34,21 @@ supabase/
   functions/      Edge Functions (ai-agent-reply, chat-media, create-checkout, payment-webhook)
 ```
 
+## Diseño de interfaz (dark premium)
+
+Sistema de diseño propio definido en `src/index.css`:
+
+- **Tipografía**: Inter (texto) + Sora (títulos, `font-display`).
+- **Paleta**: `surface`/`surface-2`/`surface-3`/`surface-4`, `line`, `primary`
+  (`#e11d63`) y `accent` (`#8b5cf6`).
+- **Utilidades**: `bg-brand-gradient`, `text-gradient`, `bg-grid`, `bg-noise`,
+  `shadow-card`, `shadow-soft`, `shadow-glow`.
+- **Componentes**: `ui/Button`, `Card`, `Input`, `Badge`, `Loader`, `Skeleton`,
+  `BrandLogo`, `Segmented` (control segmentado con estado seleccionado en
+  degradado). Patrones recurrentes: avatares con anillo degradado, mosaicos de
+  iconos en degradado para encabezados, orbes difuminados y fondo `bg-grid` en
+  landing/auth.
+
 ## Puesta en marcha
 
 1. Instalar dependencias:

@@ -36,10 +36,12 @@ export function ConversationList({ conversations, activeId, onSelect }) {
                     activeId === conversation.id && 'bg-surface-2',
                   )}
                 >
-                  <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-surface-3">
-                    <User className="h-5 w-5 text-neutral-500" />
+                  <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-primary to-accent p-px">
+                    <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-surface-3">
+                      <User className="h-5 w-5 text-neutral-500" />
+                    </div>
                     {unread ? (
-                      <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-surface bg-sky-500" />
+                      <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-surface bg-brand-gradient" />
                     ) : null}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -58,7 +60,7 @@ export function ConversationList({ conversations, activeId, onSelect }) {
                     </p>
                   </div>
                   {unread ? (
-                    <span className="h-2 w-2 shrink-0 rounded-full bg-sky-500" />
+                    <span className="h-2 w-2 shrink-0 rounded-full bg-brand-gradient" />
                   ) : null}
                 </button>
               </li>

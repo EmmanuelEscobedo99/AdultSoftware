@@ -21,63 +21,63 @@ export default function StudioPage() {
       </header>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <Link to="/dashboard/creator/content" className="block">
-          <Card className="h-full transition-colors hover:border-primary">
+        <Link to="/dashboard/creator/content" className="group block">
+          <Card className="flex h-full flex-col justify-between gap-4 transition-all hover:-translate-y-1 hover:border-primary/60 hover:shadow-glow">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-primary" />
-                Contenido
-              </CardTitle>
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-glow transition-transform group-hover:scale-110">
+                <FileText className="h-5 w-5" />
+              </span>
+              <CardTitle className="mt-3">Contenido</CardTitle>
+              <CardDescription>{published} posts publicados</CardDescription>
             </CardHeader>
-            <CardDescription>{published} posts publicados</CardDescription>
           </Card>
         </Link>
 
-        <Link to="/dashboard/creator/subscriptions" className="block">
-          <Card className="h-full transition-colors hover:border-primary">
+        <Link to="/dashboard/creator/subscriptions" className="group block">
+          <Card className="flex h-full flex-col justify-between gap-4 transition-all hover:-translate-y-1 hover:border-primary/60 hover:shadow-glow">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-primary" />
-                Suscripciones
-              </CardTitle>
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-glow transition-transform group-hover:scale-110">
+                <Users className="h-5 w-5" />
+              </span>
+              <CardTitle className="mt-3">Suscripciones</CardTitle>
+              <CardDescription>Gestiona tus planes y fans</CardDescription>
             </CardHeader>
-            <CardDescription>Gestiona tus planes y fans</CardDescription>
           </Card>
         </Link>
 
-        <Link to="/dashboard/creator/chat" className="block">
-          <Card className="h-full transition-colors hover:border-primary">
+        <Link to="/dashboard/creator/chat" className="group block">
+          <Card className="flex h-full flex-col justify-between gap-4 transition-all hover:-translate-y-1 hover:border-primary/60 hover:shadow-glow">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <MessageSquare className="h-5 w-5 text-primary" />
-                Chat
-              </CardTitle>
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-glow transition-transform group-hover:scale-110">
+                <MessageSquare className="h-5 w-5" />
+              </span>
+              <CardTitle className="mt-3">Chat</CardTitle>
+              <CardDescription>Conversa con tus fans</CardDescription>
             </CardHeader>
-            <CardDescription>Conversa con tus fans</CardDescription>
           </Card>
         </Link>
 
-        <Link to="/dashboard/creator/ai" className="block">
-          <Card className="h-full transition-colors hover:border-primary">
+        <Link to="/dashboard/creator/ai" className="group block">
+          <Card className="flex h-full flex-col justify-between gap-4 transition-all hover:-translate-y-1 hover:border-primary/60 hover:shadow-glow">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary" />
-                Agente IA
-              </CardTitle>
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-glow transition-transform group-hover:scale-110">
+                <Sparkles className="h-5 w-5" />
+              </span>
+              <CardTitle className="mt-3">Agente IA</CardTitle>
+              <CardDescription>Automatiza respuestas y ventas</CardDescription>
             </CardHeader>
-            <CardDescription>Automatiza respuestas y ventas</CardDescription>
           </Card>
         </Link>
 
-        <Link to="/dashboard/creator/payouts" className="block">
-          <Card className="h-full transition-colors hover:border-primary">
+        <Link to="/dashboard/creator/payouts" className="group block">
+          <Card className="flex h-full flex-col justify-between gap-4 transition-all hover:-translate-y-1 hover:border-primary/60 hover:shadow-glow">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-primary" />
-                Pagos y cobros
-              </CardTitle>
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-glow transition-transform group-hover:scale-110">
+                <DollarSign className="h-5 w-5" />
+              </span>
+              <CardTitle className="mt-3">Pagos y cobros</CardTitle>
+              <CardDescription>Configura tu método de pago y cobra</CardDescription>
             </CardHeader>
-            <CardDescription>Configura tu método de pago y cobra</CardDescription>
           </Card>
         </Link>
       </div>
@@ -89,16 +89,21 @@ export default function StudioPage() {
         </Link>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Bienvenido, {profile?.display_name ?? profile?.username}</CardTitle>
-        </CardHeader>
-        <CardDescription>
-          Publica tu primer contenido para empezar a monetizar. Usa "Nuevo post"
-          para subir imágenes o videos con visibilidad libre, para suscriptores o
-          PPV.
-        </CardDescription>
-      </Card>
+      <div className="relative overflow-hidden rounded-2xl border border-line/70 bg-surface-2/70 p-6 shadow-card backdrop-blur-sm">
+        <div className="absolute inset-0 bg-grid opacity-20" />
+        <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-primary/20 blur-3xl" />
+        <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-accent/20 blur-3xl" />
+        <div className="relative">
+          <h2 className="text-lg font-semibold text-neutral-100">
+            Bienvenido, {profile?.display_name ?? profile?.username}
+          </h2>
+          <p className="mt-1 text-sm text-neutral-400">
+            Publica tu primer contenido para empezar a monetizar. Usa "Nuevo
+            post" para subir imágenes o videos con visibilidad libre, para
+            suscriptores o PPV.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }

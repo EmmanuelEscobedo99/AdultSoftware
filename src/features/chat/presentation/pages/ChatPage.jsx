@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/Skeleton'
 import { useConversations, useStartConversation } from '../../application/useChat'
 import { ConversationList, getOtherParticipant } from '../components/ConversationList'
 import { ChatWindow } from '../components/ChatWindow'
+import { MessageCircle } from 'lucide-react'
 
 const chatErrorMessages = {
   not_authorized_to_chat:
@@ -64,8 +65,12 @@ export default function ChatPage() {
     if (username && !conversationId) {
       return (
         <div className="flex h-full flex-col items-center justify-center gap-4 p-8">
-          <p className="text-sm text-neutral-400">
-            Inicia una conversación con @{username}
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-gradient text-white shadow-glow">
+            <MessageCircle className="h-7 w-7" />
+          </span>
+          <p className="text-sm text-neutral-300">
+            Inicia una conversación con{' '}
+            <span className="font-semibold text-neutral-100">@{username}</span>
           </p>
           <Textarea
             rows={4}
@@ -82,8 +87,11 @@ export default function ChatPage() {
     }
     if (!conversationId) {
       return (
-        <div className="flex h-full items-center justify-center">
-          <p className="text-sm text-neutral-500">
+        <div className="flex h-full flex-col items-center justify-center gap-3">
+          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-surface-3 text-neutral-500">
+            <MessageCircle className="h-7 w-7" />
+          </span>
+          <p className="max-w-sm text-center text-sm text-neutral-500">
             Selecciona una conversación o entra al perfil de un creador para
             escribirle.
           </p>

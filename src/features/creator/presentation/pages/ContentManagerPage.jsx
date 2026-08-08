@@ -38,16 +38,19 @@ export default function ContentManagerPage() {
           ))}
         </div>
       ) : (
-        <div className="rounded-xl border border-dashed border-line py-16 text-center">
-          <p className="text-neutral-300">Aún no has publicado nada.</p>
-          <p className="mt-1 text-sm text-neutral-500">
-            Sube tu primer post y míralo aquí como lo verían tus fans.
-          </p>
-          <Link to="/dashboard/creator/content/new">
-            <Button className="mt-4">
-              <Plus className="h-4 w-4" /> Crear mi primer post
-            </Button>
-          </Link>
+        <div className="relative overflow-hidden rounded-2xl border border-dashed border-line bg-surface-2/40 py-20 text-center">
+          <div className="absolute inset-0 bg-grid opacity-20" />
+          <div className="relative">
+            <p className="text-neutral-200">Aún no has publicado nada.</p>
+            <p className="mt-1 text-sm text-neutral-500">
+              Sube tu primer post y míralo aquí como lo verían tus fans.
+            </p>
+            <Link to="/dashboard/creator/content/new">
+              <Button className="mt-5">
+                <Plus className="h-4 w-4" /> Crear mi primer post
+              </Button>
+            </Link>
+          </div>
         </div>
       )}
     </div>

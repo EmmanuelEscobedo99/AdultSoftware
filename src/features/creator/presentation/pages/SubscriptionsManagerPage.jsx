@@ -9,6 +9,7 @@ import { Label, FieldError } from '@/components/ui/Label'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
+import { Segmented } from '@/components/ui/Segmented'
 import { User } from 'lucide-react'
 import { supabasePlansRepository } from '../../infrastructure/supabasePlansRepository'
 import { useMyPlans, useMySubscribers } from '../../application/usePlans'
@@ -141,26 +142,16 @@ export default function SubscriptionsManagerPage() {
 
               <div>
                 <Label>Ciclo de facturación</Label>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
+                <Segmented
+                  className="grid-cols-3"
+                  options={[
                     { value: 'monthly', label: 'Mensual' },
                     { value: 'quarterly', label: 'Trimestral' },
                     { value: 'yearly', label: 'Anual' },
-                  ].map((option) => (
-                    <label
-                      key={option.value}
-                      className="flex cursor-pointer items-center justify-center rounded-lg border border-line bg-surface-3 px-2 py-2 text-sm text-neutral-200 has-checked:border-primary has-checked:text-primary"
-                    >
-                      <input
-                        type="radio"
-                        value={option.value}
-                        className="sr-only"
-                        {...register('billing_interval')}
-                      />
-                      {option.label}
-                    </label>
-                  ))}
-                </div>
+                  ]}
+                  error={errors.billing_interval}
+                  {...register('billing_interval')}
+                />
                 <FieldError message={errors.billing_interval?.message} />
               </div>
 

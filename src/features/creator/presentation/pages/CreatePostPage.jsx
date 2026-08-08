@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button'
 import { Input, Textarea } from '@/components/ui/Input'
 import { Label, FieldError } from '@/components/ui/Label'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Segmented } from '@/components/ui/Segmented'
 import { POST_VISIBILITY } from '@/lib/constants'
 import { createPostSchema } from '../../domain/content.schema'
 import { creatorContentService } from '../../application/creatorContent.service'
@@ -93,26 +94,16 @@ export default function CreatePostPage() {
 
             <div>
               <Label>Visibilidad</Label>
-              <div className="grid grid-cols-3 gap-2">
-                {[
+              <Segmented
+                className="grid-cols-3"
+                options={[
                   { value: POST_VISIBILITY.FREE, label: 'Libre' },
                   { value: POST_VISIBILITY.SUBSCRIBERS, label: 'Suscriptores' },
                   { value: POST_VISIBILITY.PPV, label: 'PPV' },
-                ].map((option) => (
-                  <label
-                    key={option.value}
-                    className="flex cursor-pointer items-center justify-center rounded-lg border border-line bg-surface-3 px-2 py-2 text-sm text-neutral-200 has-checked:border-primary has-checked:text-primary"
-                  >
-                    <input
-                      type="radio"
-                      value={option.value}
-                      className="sr-only"
-                      {...register('visibility')}
-                    />
-                    {option.label}
-                  </label>
-                ))}
-              </div>
+                ]}
+                error={errors.visibility}
+                {...register('visibility')}
+              />
               <FieldError message={errors.visibility?.message} />
             </div>
 
@@ -142,9 +133,16 @@ export default function CreatePostPage() {
             </CardDescription>
           </CardHeader>
 
-          <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border border-dashed border-line bg-surface-3 px-4 py-8 text-sm text-neutral-400 hover:border-primary">
-            <ImagePlus className="h-6 w-6" />
-            <span>Haz clic para seleccionar archivos</span>
+          <label className="group flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-line bg-surface-3/60 px-4 py-10 text-sm text-neutral-400 transition-all hover:border-primary/60 hover:bg-surface-3 hover:shadow-[0_8px_24px_-12px_rgba(225,29,99,0.4)]">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-gradient text-white shadow-glow transition-transform group-hover:scale-110">
+              <ImagePlus className="h-6 w-6" />
+            </span>
+            <span className="font-medium text-neutral-300">
+              Haz clic para seleccionar archivos
+            </span>
+            <span className="text-xs text-neutral-500">
+              Arrastra o selecciona imágenes y videos
+            </span>
             <input
               type="file"
               multiple
@@ -159,7 +157,7 @@ export default function CreatePostPage() {
               {files.map((file, index) => (
                 <li
                   key={`${file.name}-${index}`}
-                  className="flex items-center justify-between rounded-lg bg-surface-3 px-3 py-2 text-sm"
+                  className="flex items-center justify-between rounded-xl border border-line/70 bg-surface-3/70 px-3 py-2 text-sm backdrop-blur-sm"
                 >
                   <span className="truncate text-neutral-300">
                     {file.name} ({Math.round(file.size / 1024)} KB)
@@ -167,7 +165,7 @@ export default function CreatePostPage() {
                   <button
                     type="button"
                     onClick={() => removeFile(index)}
-                    className="ml-3 text-neutral-500 hover:text-red-400"
+                    className="ml-3 flex h-7 w-7 items-center justify-center rounded-full text-neutral-500 transition-colors hover:bg-red-400/10 hover:text-red-400"
                   >
                     <X className="h-4 w-4" />
                   </button>

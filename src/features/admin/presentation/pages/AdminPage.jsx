@@ -28,6 +28,11 @@ function UserRow({ user, queryClient }) {
 
   return (
     <div className="flex flex-wrap items-center gap-3 border-b border-line py-3 last:border-0">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-accent p-[2px]">
+        <span className="flex h-full w-full items-center justify-center rounded-full bg-surface-3 text-xs font-bold text-neutral-300">
+          {(user.display_name ?? user.username).charAt(0).toUpperCase()}
+        </span>
+      </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <p className="truncate font-medium text-neutral-100">
@@ -44,7 +49,7 @@ function UserRow({ user, queryClient }) {
       <select
         value={role}
         onChange={(e) => setRole(e.target.value)}
-        className="h-9 rounded-lg border border-line bg-surface-3 px-2 text-sm text-neutral-200"
+        className="h-9 rounded-xl border border-line bg-surface-3 px-2.5 text-sm text-neutral-200 outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30"
       >
         {Object.values(ROLES).map((r) => (
           <option key={r} value={r}>
@@ -92,31 +97,43 @@ export default function AdminPage() {
 
   return (
     <div className="max-w-4xl space-y-8">
-      <header>
-        <h1 className="text-2xl font-bold text-neutral-100">Administración</h1>
-        <p className="mt-1 text-sm text-neutral-400">
-          Usuarios, roles, contenido y pagos de la plataforma.
-        </p>
+      <header className="flex items-center gap-3">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-glow">
+          <ShieldCheck className="h-6 w-6" />
+        </span>
+        <div>
+          <h1 className="text-2xl font-bold text-neutral-100">Administración</h1>
+          <p className="mt-1 text-sm text-neutral-400">
+            Usuarios, roles, contenido y pagos de la plataforma.
+          </p>
+        </div>
       </header>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {statCards.map((card) => (
-          <Card key={card.label} className="p-4">
-            <card.icon className="mb-2 h-5 w-5 text-primary" />
+          <div
+            key={card.label}
+            className="rounded-2xl border border-line/70 bg-surface-2/70 p-4 shadow-card backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-glow"
+          >
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-gradient text-white">
+              <card.icon className="h-4 w-4" />
+            </span>
             {statsLoading ? (
-              <Skeleton className="h-7 w-12" />
+              <Skeleton className="mt-3 h-7 w-12" />
             ) : (
-              <p className="text-2xl font-bold text-neutral-100">{card.value}</p>
+              <p className="mt-3 text-2xl font-bold text-neutral-100">{card.value}</p>
             )}
-            <CardDescription>{card.label}</CardDescription>
-          </Card>
+            <CardDescription className="mt-1">{card.label}</CardDescription>
+          </div>
         ))}
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-neutral-400" />
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gradient text-white">
+              <ShieldCheck className="h-4 w-4" />
+            </span>
             Usuarios
           </CardTitle>
           <CardDescription>
@@ -138,7 +155,7 @@ export default function AdminPage() {
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="h-10 rounded-lg border border-line bg-surface-3 px-2 text-sm text-neutral-200"
+            className="h-10 rounded-xl border border-line bg-surface-3 px-3 text-sm text-neutral-200 outline-none transition-colors focus:border-primary focus:ring-2 focus:ring-primary/30"
           >
             <option value="">Todos los roles</option>
             {Object.values(ROLES).map((r) => (

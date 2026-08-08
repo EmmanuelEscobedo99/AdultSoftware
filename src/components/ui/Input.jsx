@@ -1,6 +1,9 @@
 import { forwardRef } from 'react'
 import { cn } from '../../lib/cn'
 
+const baseField =
+  'w-full rounded-xl border bg-surface-2/70 px-3 text-sm text-neutral-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] placeholder:text-neutral-500 transition-colors focus:border-primary/70 focus:outline-none focus:ring-2 focus:ring-primary/25'
+
 export const Input = forwardRef(function Input(
   { className, error, ...props },
   ref,
@@ -9,8 +12,9 @@ export const Input = forwardRef(function Input(
     <input
       ref={ref}
       className={cn(
-        'h-10 w-full rounded-lg border border-line bg-surface-2 px-3 text-sm text-neutral-100 placeholder:text-neutral-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary',
-        error && 'border-red-500',
+        baseField,
+        'h-10',
+        error ? 'border-red-500' : 'border-line',
         className,
       )}
       {...props}
@@ -26,8 +30,9 @@ export const Textarea = forwardRef(function Textarea(
     <textarea
       ref={ref}
       className={cn(
-        'w-full rounded-lg border border-line bg-surface-2 px-3 py-2 text-sm text-neutral-100 placeholder:text-neutral-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary',
-        error && 'border-red-500',
+        baseField,
+        'py-2',
+        error ? 'border-red-500' : 'border-line',
         className,
       )}
       {...props}

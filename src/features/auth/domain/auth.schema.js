@@ -21,6 +21,7 @@ export const registerSchema = z
       .regex(/^[a-z0-9_]+$/i, 'Solo letras, números y guion bajo'),
     displayName: z.string().min(2, 'Mínimo 2 caracteres').max(50).optional(),
     role: z.enum(['creator', 'subscriber']).default('subscriber'),
+    ageConfirm: z.literal(true, { message: 'Debes confirmar que eres mayor de 18 años' }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Las contraseñas no coinciden',

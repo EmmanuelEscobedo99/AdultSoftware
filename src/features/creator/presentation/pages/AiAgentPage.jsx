@@ -23,7 +23,11 @@ const defaults = {
 
 function Toggle({ checked, onChange, label, description }) {
   return (
-    <label className="flex cursor-pointer items-center justify-between gap-4 rounded-lg border border-line bg-surface-3 px-4 py-3">
+    <label
+      className={`flex cursor-pointer items-center justify-between gap-4 rounded-xl border px-4 py-3 transition-colors ${
+        checked ? 'border-primary/50 bg-primary/5' : 'border-line bg-surface-3/70'
+      }`}
+    >
       <div>
         <p className="text-sm font-medium text-neutral-100">{label}</p>
         {description ? (
@@ -89,9 +93,9 @@ export default function AiAgentPage() {
 
   if (isLoading) {
     return (
-      <div className="max-w-2xl space-y-4">
-        <Skeleton className="h-40 w-full" />
-        <Skeleton className="h-40 w-full" />
+      <div className="mx-auto max-w-2xl space-y-4">
+        <Skeleton className="h-40 w-full rounded-2xl" />
+        <Skeleton className="h-40 w-full rounded-2xl" />
       </div>
     )
   }
@@ -99,7 +103,9 @@ export default function AiAgentPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <header className="flex items-center gap-3">
-        <Sparkles className="h-7 w-7 text-primary" />
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-glow">
+          <Sparkles className="h-6 w-6" />
+        </span>
         <div>
           <h1 className="text-2xl font-bold text-neutral-100">Agente IA</h1>
           <p className="text-sm text-neutral-400">

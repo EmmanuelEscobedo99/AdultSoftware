@@ -63,8 +63,8 @@ export default function FloatingChat() {
   return (
     <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3">
       {open ? (
-        <div className="flex h-[32rem] w-[22rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-line bg-surface-2 shadow-2xl">
-          <div className="flex items-center gap-2 border-b border-line px-3 py-2.5">
+        <div className="flex h-[32rem] w-[22rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-3xl border border-line/70 bg-surface-2/95 shadow-soft backdrop-blur-xl">
+          <div className="flex items-center gap-2 border-b border-line/70 px-3 py-2.5">
             {activeId ? (
               <>
                 <Button
@@ -129,13 +129,13 @@ export default function FloatingChat() {
       ) : null}
 
       <Button
-        className="relative h-14 w-14 rounded-full shadow-xl"
+        className="relative h-14 w-14 rounded-full bg-brand-gradient shadow-[0_12px_32px_-8px_rgba(225,29,99,0.65)] transition-transform hover:scale-105"
         onClick={() => setOpen((v) => !v)}
         title="Chat"
       >
         <MessageCircle className="h-6 w-6" />
         {!open && unread > 0 ? (
-          <span className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-sky-500 px-1 text-xs font-bold text-white">
+          <span className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-gradient-to-br from-sky-500 to-accent px-1 text-xs font-bold text-white shadow-[0_4px_12px_-4px_rgba(59,130,246,0.8)]">
             {unread > 99 ? '99+' : unread}
           </span>
         ) : null}

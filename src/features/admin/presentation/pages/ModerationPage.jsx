@@ -29,17 +29,24 @@ export default function ModerationPage() {
 
   return (
     <div className="max-w-4xl space-y-6">
-      <header>
-        <h1 className="text-2xl font-bold text-neutral-100">Moderación</h1>
-        <p className="mt-1 text-sm text-neutral-400">
-          Reportes de la comunidad, bloqueos y advertencias.
-        </p>
+      <header className="flex items-center gap-3">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-gradient text-white shadow-glow">
+          <Flag className="h-6 w-6" />
+        </span>
+        <div>
+          <h1 className="text-2xl font-bold text-neutral-100">Moderación</h1>
+          <p className="mt-1 text-sm text-neutral-400">
+            Reportes de la comunidad, bloqueos y advertencias.
+          </p>
+        </div>
       </header>
 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Flag className="h-5 w-5 text-neutral-400" />
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-gradient text-white">
+              <Flag className="h-4 w-4" />
+            </span>
             Reportes
           </CardTitle>
           <CardDescription>

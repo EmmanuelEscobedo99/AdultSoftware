@@ -55,12 +55,14 @@ function NotificationRow({ notification, onNavigate }) {
       className="flex items-center gap-3 border-b border-line px-4 py-3 last:border-0 hover:bg-surface-3"
     >
       <div className="relative shrink-0">
-        <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-surface-3">
-          {avatarUrl ? (
-            <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
-          ) : (
-            <Icon className="h-4 w-4 text-neutral-400" />
-          )}
+        <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-primary/40 to-accent/40 p-px">
+          <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-surface-3">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <Icon className="h-4 w-4 text-neutral-400" />
+            )}
+          </div>
         </div>
       </div>
       <div className="min-w-0 flex-1">
@@ -101,24 +103,24 @@ export function NotificationsBell() {
   }
 
   return (
-    <div ref={ref} className="fixed right-6 top-6 z-50">
+    <div ref={ref} className="relative">
       <button
         type="button"
         onClick={handleToggle}
         title="Notificaciones"
-        className="relative flex h-10 w-10 items-center justify-center rounded-full bg-surface-3 text-neutral-200 transition-colors hover:bg-surface-2"
+        className="relative flex h-10 w-10 items-center justify-center rounded-xl border border-line/70 bg-surface-2/70 text-neutral-200 shadow-card backdrop-blur-sm transition-colors hover:border-neutral-500/50 hover:text-white"
       >
         <Bell className="h-5 w-5" />
         {unread > 0 ? (
-          <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">
+          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-gradient px-1 text-[10px] font-bold text-white shadow-[0_4px_12px_-4px_rgba(225,29,99,0.7)]">
             {unread}
           </span>
         ) : null}
       </button>
 
       {open ? (
-        <div className="absolute right-0 mt-2 w-80 overflow-hidden rounded-xl border border-line bg-surface-2 shadow-2xl">
-          <div className="flex items-center justify-between border-b border-line px-4 py-3">
+        <div className="absolute right-0 mt-2 w-80 overflow-hidden rounded-2xl border border-line/70 bg-surface-2/95 shadow-soft backdrop-blur-xl">
+          <div className="flex items-center justify-between border-b border-line/70 px-4 py-3">
             <p className="text-sm font-semibold text-neutral-100">Notificaciones</p>
             {unread > 0 ? (
               <Button

@@ -34,17 +34,26 @@ function timeAgo(date) {
   return new Date(date).toLocaleDateString()
 }
 
-function ActionButton({ label, onClick, children, disabled }) {
+function ActionButton({ label, onClick, children, disabled, active }) {
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="pointer-events-auto flex flex-col items-center gap-1 disabled:pointer-events-none disabled:opacity-50"
+      className="pointer-events-auto flex flex-col items-center gap-1.5 disabled:pointer-events-none disabled:opacity-50"
     >
-      {children}
+      <span
+        className={cn(
+          'flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-black/35 backdrop-blur-sm transition-transform hover:scale-105',
+          active && 'border-primary/60 bg-primary/20',
+        )}
+      >
+        {children}
+      </span>
       {label !== undefined ? (
-        <span className="text-xs font-medium text-white">{label}</span>
+        <span className="text-xs font-medium text-white/90 [text-shadow:0_1px_2px_rgba(0,0,0,0.6)]">
+          {label}
+        </span>
       ) : null}
     </button>
   )
@@ -56,12 +65,14 @@ function CommentRow({ comment, onDelete, busy }) {
   const own = user?.id === comment.user_id
   return (
     <div className="flex gap-3">
-      <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-3">
-        {avatarUrl ? (
-          <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
-        ) : (
-          <User className="h-4 w-4 text-neutral-400" />
-        )}
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-primary/50 to-accent/50 p-px">
+        <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-surface-3">
+          {avatarUrl ? (
+            <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+          ) : (
+            <User className="h-4 w-4 text-neutral-400" />
+          )}
+        </div>
       </div>
       <div className="min-w-0 flex-1">
         <p className="text-xs font-semibold text-white">
@@ -144,20 +155,22 @@ export function VideoCard({
         <Skeleton className="h-full w-full" />
       )}
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-4 pb-6">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/45 to-transparent p-4 pb-6">
         <div className="flex items-end justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
             <Link to={profileTo} className="pointer-events-auto block shrink-0">
-              <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full border-2 border-white/70 bg-surface-3">
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt={video.creator?.username}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <User className="h-5 w-5 text-neutral-300" />
-                )}
+              <div className="flex h-11 w-11 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-primary to-accent p-[2px]">
+                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-surface-3">
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt={video.creator?.username}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <User className="h-5 w-5 text-neutral-300" />
+                  )}
+                </div>
               </div>
             </Link>
             <div className="min-w-0">
@@ -181,9 +194,9 @@ export function VideoCard({
             <div className="pointer-events-auto flex shrink-0 flex-col gap-2">
               <Button
                 size="sm"
-                variant={isFollowing ? 'outline' : undefined}
+                variant={isFollowing ? 'outline' : 'primary'}
                 className={cn(
-                  isFollowing && 'border-white/40 text-white hover:bg-white/10',
+                  isFollowing && 'border-white/40 bg-white/10 text-white hover:bg-white/15',
                 )}
                 onClick={() => onToggleFollow(video)}
                 loading={followPending}
@@ -196,7 +209,7 @@ export function VideoCard({
                 {isFollowing ? 'Siguiendo' : 'Seguir'}
               </Button>
               <Link to={profileTo}>
-                <Button size="sm" variant="secondary" className="w-full">
+                <Button size="sm" variant="secondary" className="w-full border border-white/15 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20">
                   Suscribirse
                 </Button>
               </Link>
@@ -205,15 +218,16 @@ export function VideoCard({
         </div>
       </div>
 
-      <div className="absolute bottom-28 right-3 flex flex-col items-center gap-5">
+      <div className="absolute bottom-28 right-3 flex flex-col items-center gap-4">
         <ActionButton
           label={formatCount(video.like_count)}
           onClick={() => onToggleLike(video)}
           disabled={likePending}
+          active={liked}
         >
           <Heart
             className={cn(
-              'h-7 w-7 drop-shadow text-white',
+              'h-5 w-5 drop-shadow text-white transition-colors',
               liked && 'fill-red-500 text-red-500',
             )}
           />
@@ -221,11 +235,12 @@ export function VideoCard({
         <ActionButton
           label={formatCount(video.comment_count)}
           onClick={() => setCommentsOpen((value) => !value)}
+          active={commentsOpen}
         >
           <MessageCircle
             className={cn(
-              'h-7 w-7 drop-shadow text-white',
-              commentsOpen && 'fill-white/50',
+              'h-5 w-5 drop-shadow text-white',
+              commentsOpen && 'fill-white/60',
             )}
           />
         </ActionButton>
@@ -233,10 +248,11 @@ export function VideoCard({
           label="Guardar"
           onClick={() => onToggleBookmark(video)}
           disabled={bookmarkPending}
+          active={bookmarked}
         >
           <Bookmark
             className={cn(
-              'h-7 w-7 drop-shadow text-white',
+              'h-5 w-5 drop-shadow text-white',
               bookmarked && 'fill-amber-400 text-amber-400',
             )}
           />
@@ -244,9 +260,9 @@ export function VideoCard({
       </div>
 
       {commentsOpen ? (
-        <div className="absolute inset-0 z-20 flex flex-col bg-black/75 backdrop-blur-sm">
-          <div className="flex items-center justify-between px-4 py-3">
-            <p className="font-semibold text-white">
+        <div className="absolute inset-0 z-20 flex flex-col bg-black/80 backdrop-blur-md">
+          <div className="flex items-center justify-between border-b border-white/10 bg-gradient-to-b from-black/80 to-transparent px-4 py-3">
+            <p className="font-display font-semibold text-white">
               Comentarios{' '}
               <span className="text-sm font-normal text-white/60">
                 ({formatCount(video.comment_count)})

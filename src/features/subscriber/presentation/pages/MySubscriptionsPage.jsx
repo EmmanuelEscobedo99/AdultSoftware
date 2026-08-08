@@ -10,12 +10,14 @@ import { Send, Users } from 'lucide-react'
 function SubCreatorAvatar({ creator }) {
   const { data: avatarUrl } = useProfileImage(creator?.avatar_url)
   return (
-    <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-surface-3">
-      {avatarUrl ? (
-        <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
-      ) : (
-        <Users className="h-5 w-5 text-neutral-500" />
-      )}
+    <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-primary to-accent p-[2px]">
+      <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full bg-surface-3">
+        {avatarUrl ? (
+          <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+        ) : (
+          <Users className="h-5 w-5 text-neutral-500" />
+        )}
+      </div>
     </div>
   )
 }
@@ -56,7 +58,7 @@ export default function MySubscriptionsPage() {
       <h1 className="text-2xl font-bold text-neutral-100">Mis suscripciones</h1>
 
       {subscriptions.map((sub) => (
-        <Card key={sub.id} className="flex items-center gap-4">
+        <Card key={sub.id} className="flex items-center gap-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-glow">
           <SubCreatorAvatar creator={sub.creator} />
           <div className="min-w-0 flex-1">
             <p className="font-semibold text-neutral-100">

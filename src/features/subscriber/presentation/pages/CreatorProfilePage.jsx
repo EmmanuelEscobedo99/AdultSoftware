@@ -133,7 +133,8 @@ export default function CreatorProfilePage() {
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
-        <div className="relative h-40 w-full overflow-hidden rounded-2xl border border-line bg-gradient-to-br from-fuchsia-700/40 via-purple-700/30 to-pink-700/40 sm:h-48">
+        <div className="relative h-40 w-full overflow-hidden rounded-2xl border border-line/70 bg-gradient-to-br from-fuchsia-700/40 via-purple-700/30 to-pink-700/40 shadow-card sm:h-48">
+          <div className="absolute inset-0 bg-grid opacity-30" />
           {coverUrl ? (
             <img src={coverUrl} alt="Portada" className="h-full w-full object-cover" />
           ) : null}
@@ -142,16 +143,18 @@ export default function CreatorProfilePage() {
         <div className="px-4">
           <div className="relative -mt-12 flex flex-wrap items-end justify-between gap-4">
             <div className="flex items-end gap-4">
-              <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full border-4 border-surface bg-surface-3">
-                {avatarUrl ? (
-                  <img
-                    src={avatarUrl}
-                    alt={creator.username}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <Users className="h-8 w-8 text-neutral-500" />
-                )}
+              <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-primary to-accent p-[3px] shadow-[0_10px_30px_-10px_rgba(225,29,99,0.6)]">
+                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-full border-4 border-surface bg-surface-3">
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt={creator.username}
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <Users className="h-8 w-8 text-neutral-500" />
+                  )}
+                </div>
               </div>
               <div className="pb-1">
                 <h1 className="text-2xl font-bold text-neutral-100">
@@ -207,7 +210,7 @@ export default function CreatorProfilePage() {
             id="provider"
             value={provider}
             onChange={(e) => setProvider(e.target.value)}
-            className="rounded-lg border border-line bg-surface-3 px-3 py-2 text-sm text-neutral-200 outline-none focus:border-primary"
+            className="rounded-xl border border-line bg-surface-3 px-3 py-2 text-sm text-neutral-200 outline-none transition-colors focus:border-primary/70 focus:ring-2 focus:ring-primary/25"
           >
             {PROVIDERS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -218,32 +221,43 @@ export default function CreatorProfilePage() {
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {plans?.map((plan) => (
-            <Card key={plan.id} className="flex flex-col">
-              <CardHeader>
-                <CardTitle>{plan.name}</CardTitle>
-                <CardDescription>
-                  {plan.billing_interval === 'monthly'
-                    ? 'Mensual'
-                    : plan.billing_interval === 'quarterly'
-                      ? 'Trimestral'
-                      : 'Anual'}
-                </CardDescription>
-              </CardHeader>
-              <div className="mt-auto flex items-center justify-between">
-                <span className="text-xl font-bold text-neutral-100">
-                  ${plan.price}
-                  <span className="text-sm font-normal text-neutral-500">
-                    /{plan.billing_interval === 'monthly' ? 'mes' : 'período'}
+            <Card
+              key={plan.id}
+              className="group flex flex-col overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-glow"
+            >
+              <div className="h-1 w-full bg-brand-gradient opacity-70" />
+              <div className="flex flex-1 flex-col p-5 pt-4">
+                <CardHeader className="mb-0">
+                  <CardTitle>{plan.name}</CardTitle>
+                  <CardDescription>
+                    {plan.billing_interval === 'monthly'
+                      ? 'Mensual'
+                      : plan.billing_interval === 'quarterly'
+                        ? 'Trimestral'
+                        : 'Anual'}
+                  </CardDescription>
+                </CardHeader>
+                {plan.description ? (
+                  <p className="mt-2 line-clamp-2 text-sm text-neutral-400">
+                    {plan.description}
+                  </p>
+                ) : null}
+                <div className="mt-auto flex items-center justify-between pt-4">
+                  <span className="font-display text-2xl font-bold text-neutral-100">
+                    ${plan.price}
+                    <span className="text-sm font-normal text-neutral-500">
+                      /{plan.billing_interval === 'monthly' ? 'mes' : 'período'}
+                    </span>
                   </span>
-                </span>
-                <Button
-                  size="sm"
-                  onClick={() => handleSubscribe(plan.id)}
-                  disabled={Boolean(subscription) || busy}
-                  loading={busy}
-                >
-                  {subscription ? 'Suscrito' : 'Suscribirse'}
-                </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => handleSubscribe(plan.id)}
+                    disabled={Boolean(subscription) || busy}
+                    loading={busy}
+                  >
+                    {subscription ? 'Suscrito' : 'Suscribirse'}
+                  </Button>
+                </div>
               </div>
             </Card>
           ))}
@@ -276,14 +290,19 @@ export default function CreatorProfilePage() {
               const included = Boolean(subscription)
               const canSee = unlocked || included
               return (
-                <Card key={post.id} className="overflow-hidden">
-                  <div className="relative aspect-[16/10] bg-gradient-to-br from-purple-800/40 to-pink-800/40">
+                <Card key={post.id} className="group overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-glow">
+                  <div className="relative aspect-[16/10] bg-gradient-to-br from-purple-800/50 via-[#3b1a4f] to-pink-800/50">
+                    <div className="absolute inset-0 bg-grid opacity-20" />
                     {canSee && post.media?.length ? (
                       <PostMedia media={post.media[0]} aspect="h-full w-full" />
                     ) : (
-                      <div className="flex h-full w-full flex-col items-center justify-center gap-2 text-white/80">
-                        <Lock className="h-8 w-8" />
-                        <span className="text-xs">Contenido premium</span>
+                      <div className="relative flex h-full w-full flex-col items-center justify-center gap-2 text-white/90">
+                        <span className="flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-black/40 backdrop-blur-sm">
+                          <Lock className="h-6 w-6" />
+                        </span>
+                        <span className="text-xs font-medium [text-shadow:0_1px_2px_rgba(0,0,0,0.6)]">
+                          Contenido premium
+                        </span>
                       </div>
                     )}
                   </div>

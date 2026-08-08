@@ -37,7 +37,7 @@ function PostCover({ post }) {
           className="h-full w-full object-cover"
         />
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-black/50">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-black/50 backdrop-blur transition-transform group-hover:scale-110">
             <Play className="h-6 w-6 fill-white text-white" />
           </div>
         </div>
@@ -67,7 +67,7 @@ export function PostCard({ post }) {
   })
 
   return (
-    <div className="group relative aspect-square overflow-hidden rounded-xl border border-line bg-surface-2">
+    <div className="group relative aspect-square overflow-hidden rounded-xl border border-line bg-surface-2 transition-all hover:border-primary/50 hover:shadow-glow">
       <PostCover post={post} />
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-3 pt-10">

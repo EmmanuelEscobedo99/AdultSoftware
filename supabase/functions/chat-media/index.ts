@@ -76,11 +76,23 @@ Deno.serve(async (req) => {
     if (!user) return json({ error: 'no_autorizado' }, 401)
 
     const url = new URL(req.url)
-    const action = url.searchParams.get('action') ?? 'upload'
+    const contentType = req.headers.get('content-type') ?? ''
+    let action = url.searchParams.get('action')
+    let jsonBody: Record<string, unknown> | null = null
+    let form: FormData | null = null
+
+    if (!action && contentType.includes('application/json')) {
+      jsonBody = await req.json()
+      action = String(jsonBody?.action ?? '')
+    }
+    if (!action && contentType.includes('multipart/form-data')) {
+      form = await req.formData()
+      action = String(form.get('action') ?? 'upload')
+    }
+    action = action || 'upload'
 
     if (action === 'sign') {
-      const body = await req.json()
-      const path = String(body?.path ?? '')
+      const path = String(jsonBody?.path ?? '')
       const conversationId = path.split('/')[0]
       if (!path || !conversationId) return json({ error: 'path_invalido' }, 400)
       if (!(await isParticipant(conversationId, user.id))) {
@@ -93,9 +105,8 @@ Deno.serve(async (req) => {
       return json({ url: data.signedUrl })
     }
 
-    const form = await req.formData()
-    const conversationId = String(form.get('conversation_id') ?? '')
-    const file = form.get('file')
+    const conversationId = String(form?.get('conversation_id') ?? '')
+    const file = form?.get('file')
 
     if (!conversationId || !(file instanceof File)) {
       return json({ error: 'conversacion_o_archivo_requerido' }, 400)

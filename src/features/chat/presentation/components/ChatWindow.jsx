@@ -16,9 +16,16 @@ import { getOtherParticipant } from './ConversationList'
 import { Paperclip, Send, X } from 'lucide-react'
 
 function MediaAttachment({ message }) {
-  const { data: url } = useMediaUrl(message.media_path)
-  if (!url) {
+  const { data: url, isError } = useMediaUrl(message.media_path)
+  if (!url && !isError) {
     return <Skeleton className="h-48 w-full rounded-xl" />
+  }
+  if (!url) {
+    return (
+      <div className="flex h-24 w-full items-center justify-center rounded-xl bg-surface-2 text-xs text-neutral-500">
+        No se pudo cargar el archivo
+      </div>
+    )
   }
   if (message.media_type === 'video') {
     return (

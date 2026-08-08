@@ -30,8 +30,8 @@ src/
   pages/         páginas globales (landing, 404, 403)
 
 supabase/
-  migrations/     migraciones SQL (0001..0024): tablas, RLS, triggers, RPCs
-  functions/      Edge Functions (ai-agent-reply, create-checkout, payment-webhook)
+  migrations/     migraciones SQL (0001..0025): tablas, RLS, triggers, RPCs
+  functions/      Edge Functions (ai-agent-reply, chat-media, create-checkout, payment-webhook)
 ```
 
 ## Puesta en marcha
@@ -69,6 +69,7 @@ supabase/
 | Función               | Propósito                                              |
 | --------------------- | ------------------------------------------------------ |
 | `ai-agent-reply`      | Responde a fans con la IA del creador (auto-reply).    |
+| `chat-media`          | Sube adjuntos de chat y firma URLs (service_role).     |
 | `create-checkout`     | Crea el pago (Stripe / CCBill / SegPay / test).        |
 | `payment-webhook`     | Verifica y finaliza pagos desde los proveedores.       |
 
@@ -76,6 +77,7 @@ Despliegue:
 
 ```bash
 supabase functions deploy ai-agent-reply
+supabase functions deploy chat-media
 supabase functions deploy create-checkout
 supabase functions deploy payment-webhook
 ```
@@ -90,7 +92,9 @@ Variables secretas (`supabase secrets set --env-file .env.production`):
   helpers (`is_staff`, `has_active_subscription`, `has_post_access`, etc.).
 - **Roles** en `profiles.role`, sincronizados con los claims `app_metadata.role`
   del JWT. Los cambios de rol solo se hacen vía RPC `admin_set_role`
-  (verificado en servidor).
+  (verificado en servidor). En el registro solo se aceptan `subscriber` y
+  `creator` (migración 0025); cualquier rol privilegiado solicitado se fuerza a
+  `subscriber`.
 - **Frontend**: únicamente `anon key`. La `service_role_key` vive solo en
   Edge Functions / webhooks.
 - **Chat** protegido por RPCs `security definer` (`start_conversation`,
